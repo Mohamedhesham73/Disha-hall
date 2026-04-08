@@ -109,7 +109,7 @@
       border-radius: 50%;
     }
 
-    /* 2-column grid for 6 courts */
+    /* 3-column grid — like the real academy layout */
     .courts-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -174,35 +174,62 @@
       background: rgba(0,0,0,0.06);
       color: var(--text-muted);
     }
-    .court-item.selected .court-label-bar {
-      background: var(--orange);
-    }
-    .court-item.selected .court-num-label   { color: #fff; }
+    .court-item.selected .court-label-bar { background: var(--orange); }
+    .court-item.selected .court-num-label { color: #fff; }
     .court-item.selected .court-status-label {
       background: rgba(255,255,255,0.25);
       color: #fff;
     }
 
     /* ── Date selector ── */
+    .date-nav-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--transition);
+      color: var(--text-primary);
+      user-select: none;
+    }
+    .date-arrow:hover { border-color: var(--orange); color: var(--orange); }
+    .date-arrow:disabled,
+    .date-arrow.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
     .date-scroll {
       display: flex;
       gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      scrollbar-width: none;
+      overflow: hidden;
+      flex: 1;
     }
-    .date-scroll::-webkit-scrollbar { display: none; }
 
     .date-chip {
       flex-shrink: 0;
       background: var(--bg-card);
       border: 1.5px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 10px 14px;
+      padding: 10px 10px;
       text-align: center;
       cursor: pointer;
       transition: all var(--transition);
-      min-width: 58px;
+      min-width: 52px;
+      flex: 1;
     }
     .date-chip:hover { border-color: var(--orange); }
     .date-chip.selected {
@@ -210,7 +237,7 @@
       border-color: var(--orange);
     }
     .date-chip-day {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       color: var(--text-muted);
       letter-spacing: 0.5px;
@@ -218,12 +245,30 @@
     }
     .date-chip-num {
       font-family: var(--font-heading);
-      font-size: 22px;
+      font-size: 20px;
       color: var(--black);
       line-height: 1.1;
     }
-    .date-chip.selected .date-chip-day { color: rgba(255,255,255,0.7); }
-    .date-chip.selected .date-chip-num { color: #fff; }
+    .date-chip-month {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .date-chip.selected .date-chip-day   { color: rgba(255,255,255,0.7); }
+    .date-chip.selected .date-chip-num   { color: #fff; }
+    .date-chip.selected .date-chip-month { color: rgba(255,255,255,0.7); }
+
+    /* Month label above date row */
+    .date-month-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
 
     /* ── Time selector ── */
     .time-grid {
@@ -244,7 +289,7 @@
       transition: all var(--transition);
       font-family: var(--font-body);
     }
-    .time-btn:hover   { border-color: var(--orange); color: var(--orange); }
+    .time-btn:hover    { border-color: var(--orange); color: var(--orange); }
     .time-btn.selected { background: var(--orange); border-color: var(--orange); color: #fff; }
     .time-btn.unavail  { opacity: 0.35; cursor: not-allowed; }
 
@@ -258,7 +303,7 @@
       background: var(--bg-card);
       border: 1.5px solid var(--border);
       border-radius: var(--radius-pill);
-      padding: 8px 20px;
+      padding: 8px 16px;
       font-size: 13px;
       font-weight: 700;
       color: var(--text-secondary);
@@ -266,7 +311,7 @@
       transition: all var(--transition);
       font-family: var(--font-body);
     }
-    .hour-pill:hover   { border-color: var(--orange); color: var(--orange); }
+    .hour-pill:hover    { border-color: var(--orange); color: var(--orange); }
     .hour-pill.selected { background: var(--orange); border-color: var(--orange); color: #fff; }
 
     /* ── Summary card ── */
@@ -358,7 +403,6 @@
     .bnav-item.active .bnav-label { color: var(--orange); }
     .bnav-item:hover  .bnav-label { color: var(--orange); }
 
-    /* section spacing */
     .form-section { margin-bottom: 24px; }
   </style>
 </head>
@@ -375,7 +419,7 @@
 
   <div class="page-content">
 
-    <!-- ── STEP 1: Select Court ─────────────────────────── -->
+    <!-- ── STEP 1: Select Court ── -->
     <div class="form-section" data-aos="fade-up" data-aos-duration="450">
       <div class="step-label">
         <div class="step-num" id="step1-num">1</div>
@@ -394,50 +438,56 @@
             <div class="legend-dot" style="background:var(--black);"></div>Selected
           </div>
         </div>
-
-        <div class="courts-grid" id="courts-grid">
-          <!-- Injected by JS -->
-        </div>
+        <div class="courts-grid" id="courts-grid"></div>
       </div>
     </div>
 
-    <!-- ── STEP 2: Select Date ──────────────────────────── -->
+    <!-- ── STEP 2: Select Date ── -->
     <div class="form-section" data-aos="fade-up" data-aos-delay="80" data-aos-duration="450">
       <div class="step-label">
         <div class="step-num" id="step2-num">2</div>
         <div class="step-title">Select Date</div>
       </div>
-      <div class="date-scroll" id="date-scroll">
-        <!-- Injected by JS -->
+
+      <!-- Month label -->
+      <div class="date-month-label" id="date-month-label">April 2026</div>
+
+      <!-- Arrows + date chips -->
+      <div class="date-nav-wrapper">
+        <div class="date-arrow disabled" id="arrow-left" onclick="shiftDates(-7)">&#8592;</div>
+        <div class="date-scroll" id="date-scroll"></div>
+        <div class="date-arrow" id="arrow-right" onclick="shiftDates(7)">&#8594;</div>
       </div>
     </div>
 
-    <!-- ── STEP 3: Select Time ──────────────────────────── -->
+    <!-- ── STEP 3: Select Time ── -->
     <div class="form-section" data-aos="fade-up" data-aos-delay="140" data-aos-duration="450">
       <div class="step-label">
         <div class="step-num" id="step3-num">3</div>
         <div class="step-title">Select Start Time</div>
       </div>
-      <div class="time-grid" id="time-grid">
-        <!-- Injected by JS -->
-      </div>
+      <div class="time-grid" id="time-grid"></div>
     </div>
 
-    <!-- ── STEP 4: Select Hours ─────────────────────────── -->
+    <!-- ── STEP 4: Number of Hours ── -->
     <div class="form-section" data-aos="fade-up" data-aos-delay="200" data-aos-duration="450">
       <div class="step-label">
         <div class="step-num" id="step4-num">4</div>
         <div class="step-title">Number of Hours</div>
       </div>
       <div class="hours-row">
-        <div class="hour-pill" onclick="selectHours(this, 1)">1 hr</div>
+        <div class="hour-pill"          onclick="selectHours(this, 1)">1 hr</div>
         <div class="hour-pill selected" onclick="selectHours(this, 2)">2 hrs</div>
-        <div class="hour-pill" onclick="selectHours(this, 3)">3 hrs</div>
-        <div class="hour-pill" onclick="selectHours(this, 4)">4 hrs</div>
+        <div class="hour-pill"          onclick="selectHours(this, 3)">3 hrs</div>
+        <div class="hour-pill"          onclick="selectHours(this, 4)">4 hrs</div>
+        <div class="hour-pill"          onclick="selectHours(this, 5)">5 hrs</div>
+        <div class="hour-pill"          onclick="selectHours(this, 6)">6 hrs</div>
+        <div class="hour-pill"          onclick="selectHours(this, 7)">7 hrs</div>
+        <div class="hour-pill"          onclick="selectHours(this, 8)">8 hrs</div>
       </div>
     </div>
 
-    <!-- ── Booking Summary ──────────────────────────────── -->
+    <!-- ── Booking Summary ── -->
     <div data-aos="fade-up" data-aos-delay="240" data-aos-duration="450">
       <div class="step-label">
         <div class="step-num">5</div>
@@ -485,7 +535,7 @@
       </a>
     </div>
 
-  </div><!-- /page-content -->
+  </div>
 
   <!-- Bottom Nav -->
   <nav class="bottom-nav">
@@ -504,7 +554,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ── Firebase ──────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyARzYhxPxi0qy3P_QHFDEF1yEaI1alROJQ",
   authDomain: "disha-hall.firebaseapp.com",
@@ -519,104 +568,66 @@ const db   = firebase.firestore();
 
 AOS.init({ once: true, easing: 'ease-out-cubic' });
 
-// ── Booking state ─────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────
 let selectedCourt = null;
 let selectedDate  = null;
 let selectedTime  = null;
 let selectedHours = 2;
 let takenCourts   = new Set();
+let dateOffset    = 0; // days from today (always multiple of 7)
 
-// ── Time slots 9AM – 9PM (last slot = 9PM, ends 10/11PM) ─
+// ── Time slots ────────────────────────────────────────────
 const TIME_SLOTS = [
   '9:00 AM','10:00 AM','11:00 AM','12:00 PM',
   '1:00 PM','2:00 PM','3:00 PM','4:00 PM',
   '5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM'
 ];
 
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun',
+                      'Jul','Aug','Sep','Oct','Nov','Dec'];
+
 // ── Build SVG badminton court ─────────────────────────────
 function buildCourtSVG(courtNum, status) {
-  // Colors based on status
-  const isSelected  = status === 'selected';
-  const isTaken     = status === 'taken';
-
-  const floorColor  = isTaken ? '#E8E8E8' : '#FFF8F5';
-  const lineColor   = isTaken ? '#BBBBBB' : (isSelected ? '#FF6B35' : '#FF6B35');
-  const lineOpacity = isTaken ? '0.4'     : (isSelected ? '1'       : '0.7');
-  const netColor    = isTaken ? '#AAA'    : '#1A1A1A';
+  const isSelected = status === 'selected';
+  const isTaken    = status === 'taken';
+  const floorColor = isTaken ? '#E8E8E8' : '#FFF8F5';
+  const lineColor  = isTaken ? '#BBBBBB' : '#FF6B35';
+  const lineOp     = isTaken ? '0.4' : (isSelected ? '1' : '0.7');
+  const netColor   = isTaken ? '#AAA' : '#1A1A1A';
+  const netOp      = isTaken ? '0.3' : '0.85';
 
   return `
   <svg viewBox="0 0 160 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-
-    <!-- Floor -->
     <rect x="0" y="0" width="160" height="110" fill="${floorColor}"/>
-
-    <!-- Outer boundary -->
-    <rect x="8" y="6" width="144" height="98"
-          fill="none" stroke="${lineColor}" stroke-width="1.8" opacity="${lineOpacity}"/>
-
-    <!-- Singles sidelines (inner vertical lines) -->
-    <line x1="22" y1="6"  x2="22" y2="104"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
-    <line x1="138" y1="6" x2="138" y2="104"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
-
-    <!-- Net (center horizontal) -->
-    <line x1="8" y1="55" x2="152" y2="55"
-          stroke="${netColor}" stroke-width="2.5" opacity="${isTaken ? '0.3' : '0.85'}"/>
-
-    <!-- Net posts -->
-    <circle cx="22"  cy="55" r="2.5" fill="${netColor}" opacity="${isTaken ? '0.3' : '0.85'}"/>
-    <circle cx="138" cy="55" r="2.5" fill="${netColor}" opacity="${isTaken ? '0.3' : '0.85'}"/>
-
-    <!-- Short service lines -->
-    <line x1="8"   y1="34" x2="152" y2="34"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
-    <line x1="8"   y1="76" x2="152" y2="76"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
-
-    <!-- Long service lines (doubles) -->
-    <line x1="8"   y1="16" x2="152" y2="16"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}" stroke-dasharray="3,2"/>
-    <line x1="8"   y1="94" x2="152" y2="94"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}" stroke-dasharray="3,2"/>
-
-    <!-- Center service line (top half) -->
-    <line x1="80" y1="6"  x2="80" y2="55"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
-    <!-- Center service line (bottom half) -->
-    <line x1="80" y1="55" x2="80" y2="104"
-          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
-
-    <!-- Court number watermark -->
-    <text x="80" y="50"
-          text-anchor="middle" dominant-baseline="middle"
-          font-family="'Bebas Neue', sans-serif"
-          font-size="28"
-          fill="${lineColor}"
-          opacity="${isTaken ? '0.15' : (isSelected ? '0.18' : '0.12')}">
-      ${courtNum}
-    </text>
-    <text x="80" y="64"
-          text-anchor="middle" dominant-baseline="middle"
-          font-family="'Bebas Neue', sans-serif"
-          font-size="7"
-          fill="${lineColor}"
-          opacity="${isTaken ? '0.2' : '0.3'}"
-          letter-spacing="2">
-      COURT
-    </text>
-
+    <rect x="8" y="6" width="144" height="98" fill="none" stroke="${lineColor}" stroke-width="1.8" opacity="${lineOp}"/>
+    <line x1="22" y1="6"  x2="22"  y2="104" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}"/>
+    <line x1="138" y1="6" x2="138" y2="104" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}"/>
+    <line x1="8" y1="55" x2="152" y2="55" stroke="${netColor}" stroke-width="2.5" opacity="${netOp}"/>
+    <circle cx="22"  cy="55" r="2.5" fill="${netColor}" opacity="${netOp}"/>
+    <circle cx="138" cy="55" r="2.5" fill="${netColor}" opacity="${netOp}"/>
+    <line x1="8"  y1="34" x2="152" y2="34" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}"/>
+    <line x1="8"  y1="76" x2="152" y2="76" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}"/>
+    <line x1="8"  y1="16" x2="152" y2="16" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}" stroke-dasharray="3,2"/>
+    <line x1="8"  y1="94" x2="152" y2="94" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}" stroke-dasharray="3,2"/>
+    <line x1="80" y1="6"  x2="80"  y2="55"  stroke="${lineColor}" stroke-width="1" opacity="${lineOp}"/>
+    <line x1="80" y1="55" x2="80"  y2="104" stroke="${lineColor}" stroke-width="1" opacity="${lineOp}"/>
+    <text x="80" y="50" text-anchor="middle" dominant-baseline="middle"
+          font-family="'Bebas Neue', sans-serif" font-size="28"
+          fill="${lineColor}" opacity="${isTaken ? '0.15' : (isSelected ? '0.18' : '0.12')}">${courtNum}</text>
+    <text x="80" y="64" text-anchor="middle" dominant-baseline="middle"
+          font-family="'Bebas Neue', sans-serif" font-size="7"
+          fill="${lineColor}" opacity="${isTaken ? '0.2' : '0.3'}" letter-spacing="2">COURT</text>
     ${isTaken ? `
-    <!-- Taken X overlay -->
-    <line x1="30" y1="20" x2="130" y2="90"
-          stroke="#E53935" stroke-width="1.5" opacity="0.25"/>
-    <line x1="130" y1="20" x2="30" y2="90"
-          stroke="#E53935" stroke-width="1.5" opacity="0.25"/>
+    <line x1="30" y1="20" x2="130" y2="90" stroke="#E53935" stroke-width="1.5" opacity="0.25"/>
+    <line x1="130" y1="20" x2="30" y2="90" stroke="#E53935" stroke-width="1.5" opacity="0.25"/>
     ` : ''}
   </svg>`;
 }
 
-// ── Render all 6 courts ───────────────────────────────────
+// ── Render courts ─────────────────────────────────────────
 function renderCourts(takenSet) {
   const grid = document.getElementById('courts-grid');
   grid.innerHTML = '';
@@ -624,23 +635,17 @@ function renderCourts(takenSet) {
   for (let i = 1; i <= 6; i++) {
     const isTaken = takenSet.has(i);
     const status  = isTaken ? 'taken' : 'available';
-
     const wrapper = document.createElement('div');
-    wrapper.className = `court-item ${status}`;
-    wrapper.id = `court-${i}`;
+    wrapper.className    = `court-item ${status}`;
+    wrapper.id           = `court-${i}`;
     wrapper.dataset.court = i;
-
-    wrapper.innerHTML = `
+    wrapper.innerHTML    = `
       ${buildCourtSVG(i, status)}
       <div class="court-label-bar">
         <div class="court-num-label">Court ${i}</div>
         <div class="court-status-label">${isTaken ? 'Taken' : 'Available'}</div>
       </div>`;
-
-    if (!isTaken) {
-      wrapper.addEventListener('click', () => selectCourt(i));
-    }
-
+    if (!isTaken) wrapper.addEventListener('click', () => selectCourt(i));
     grid.appendChild(wrapper);
   }
 }
@@ -648,48 +653,57 @@ function renderCourts(takenSet) {
 // ── Select court ──────────────────────────────────────────
 function selectCourt(num) {
   selectedCourt = num;
-
   document.querySelectorAll('.court-item').forEach(el => {
-    if (el.dataset.court == num) {
+    const n = Number(el.dataset.court);
+    if (n === num) {
       el.className = 'court-item selected';
       el.querySelector('svg').innerHTML = buildCourtSVG(num, 'selected').match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1];
       el.querySelector('.court-status-label').textContent = 'Selected ✓';
-    } else if (!takenCourts.has(Number(el.dataset.court))) {
+    } else if (!takenCourts.has(n)) {
       el.className = 'court-item available';
-      const n = Number(el.dataset.court);
       el.querySelector('svg').innerHTML = buildCourtSVG(n, 'available').match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1];
       el.querySelector('.court-status-label').textContent = 'Available';
     }
   });
-
   document.getElementById('step1-num').classList.add('done');
   updateSummary();
 }
 
-// ── Build date chips (today + next 6 days) ────────────────
+// ── Build date chips ──────────────────────────────────────
 function buildDateChips() {
   const scroll = document.getElementById('date-scroll');
   scroll.innerHTML = '';
 
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  // Month label — show month of first visible date
+  const firstDay = new Date(today);
+  firstDay.setDate(firstDay.getDate() + dateOffset);
+  document.getElementById('date-month-label').textContent =
+    MONTHS[firstDay.getMonth()] + ' ' + firstDay.getFullYear();
 
   for (let i = 0; i < 7; i++) {
-    const d   = new Date();
-    d.setDate(d.getDate() + i);
+    const d = new Date(today);
+    d.setDate(d.getDate() + dateOffset + i);
+
+    const dateStr  = d.toISOString().split('T')[0];
+    const isToday  = dateOffset === 0 && i === 0;
+    const isSelected = dateStr === selectedDate;
 
     const chip = document.createElement('div');
-    chip.className = 'date-chip' + (i === 0 ? ' selected' : '');
-    chip.dataset.date = d.toISOString().split('T')[0];
+    chip.className    = 'date-chip' + (isSelected ? ' selected' : '');
+    chip.dataset.date = dateStr;
+
     chip.innerHTML = `
-      <div class="date-chip-day">${i === 0 ? 'Today' : days[d.getDay()]}</div>
+      <div class="date-chip-day">${isToday ? 'Today' : DAYS[d.getDay()]}</div>
       <div class="date-chip-num">${d.getDate()}</div>
-      <div class="date-chip-day" style="font-size:9px;">${months[d.getMonth()]}</div>`;
+      <div class="date-chip-month">${MONTHS_SHORT[d.getMonth()]}</div>`;
 
     chip.addEventListener('click', () => {
+      selectedDate = dateStr;
       document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
       chip.classList.add('selected');
-      selectedDate = chip.dataset.date;
       document.getElementById('step2-num').classList.add('done');
       loadCourtAvailabilityForDate(selectedDate);
       updateSummary();
@@ -698,21 +712,32 @@ function buildDateChips() {
     scroll.appendChild(chip);
   }
 
-  // Default to today
-  selectedDate = new Date().toISOString().split('T')[0];
+  // Arrow states — disable left arrow if we're at today
+  const leftArrow = document.getElementById('arrow-left');
+  if (dateOffset <= 0) {
+    leftArrow.classList.add('disabled');
+  } else {
+    leftArrow.classList.remove('disabled');
+  }
 }
 
-// ── Build time slot grid ──────────────────────────────────
+// ── Shift dates forward/backward by 7 days ────────────────
+function shiftDates(delta) {
+  const newOffset = dateOffset + delta;
+  if (newOffset < 0) return; // can't go before today
+  dateOffset = newOffset;
+  buildDateChips();
+}
+
+// ── Build time slots ──────────────────────────────────────
 function buildTimeSlots() {
   const grid = document.getElementById('time-grid');
   grid.innerHTML = '';
-
   TIME_SLOTS.forEach(slot => {
     const btn = document.createElement('div');
-    btn.className = 'time-btn';
+    btn.className   = 'time-btn';
     btn.textContent = slot;
     btn.dataset.time = slot;
-
     btn.addEventListener('click', () => {
       if (btn.classList.contains('unavail')) return;
       document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
@@ -721,7 +746,6 @@ function buildTimeSlots() {
       document.getElementById('step3-num').classList.add('done');
       updateSummary();
     });
-
     grid.appendChild(btn);
   });
 }
@@ -735,35 +759,27 @@ function selectHours(el, hrs) {
   updateSummary();
 }
 
-// ── Update summary card ───────────────────────────────────
+// ── Update summary ────────────────────────────────────────
 function updateSummary() {
   document.getElementById('sum-court').textContent =
     selectedCourt ? `Court ${selectedCourt}` : '— Select a court';
-
   document.getElementById('sum-date').textContent =
     selectedDate ? formatDate(selectedDate) : '— Select a date';
-
   document.getElementById('sum-start').textContent =
     selectedTime || '— Select a time';
-
-  if (selectedTime) {
-    document.getElementById('sum-end').textContent = calcEndTime(selectedTime, selectedHours);
-  } else {
-    document.getElementById('sum-end').textContent = '—';
-  }
-
+  document.getElementById('sum-end').textContent =
+    selectedTime ? calcEndTime(selectedTime, selectedHours) : '—';
   document.getElementById('sum-hours').textContent =
     selectedHours + (selectedHours === 1 ? ' hour' : ' hours');
-
   document.getElementById('sum-total').textContent =
     (selectedHours * 200) + ' EGP';
 }
 
 // ── Calc end time ─────────────────────────────────────────
 function calcEndTime(start, hrs) {
-  const isPM  = start.includes('PM');
-  const isAM  = start.includes('AM');
-  let   [h,m] = start.replace(' AM','').replace(' PM','').split(':').map(Number);
+  const isPM = start.includes('PM');
+  const isAM = start.includes('AM');
+  let [h, m] = start.replace(' AM','').replace(' PM','').split(':').map(Number);
   if (isPM && h !== 12) h += 12;
   if (isAM && h === 12) h = 0;
   h += hrs;
@@ -782,7 +798,7 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
 }
 
-// ── Load court availability for selected date ─────────────
+// ── Load court availability ───────────────────────────────
 function loadCourtAvailabilityForDate(date) {
   db.collection('bookings')
     .where('date', '==', date)
@@ -790,7 +806,6 @@ function loadCourtAvailabilityForDate(date) {
     .onSnapshot(snap => {
       takenCourts = new Set(snap.docs.map(d => d.data().courtNumber));
       renderCourts(takenCourts);
-      // Re-select if previously selected and still available
       if (selectedCourt && !takenCourts.has(selectedCourt)) {
         selectCourt(selectedCourt);
       } else if (selectedCourt && takenCourts.has(selectedCourt)) {
@@ -800,7 +815,7 @@ function loadCourtAvailabilityForDate(date) {
     });
 }
 
-// ── Validate and save draft to localStorage ───────────────
+// ── Save draft ────────────────────────────────────────────
 function saveDraft() {
   const msg = document.getElementById('val-msg');
   if (!selectedCourt || !selectedDate || !selectedTime) {
@@ -809,8 +824,6 @@ function saveDraft() {
     return false;
   }
   msg.classList.remove('show');
-
-  // Save booking draft for rules.html → confirm.html to use
   localStorage.setItem('dh_draft', JSON.stringify({
     courtNumber: selectedCourt,
     date:        selectedDate,
@@ -826,13 +839,13 @@ function saveDraft() {
 auth.onAuthStateChanged(user => {
   if (!user) { window.location.href = 'signup.html'; return; }
 
-  // Init UI
+  // Set default selected date to today
+  selectedDate = new Date().toISOString().split('T')[0];
+
   buildDateChips();
   buildTimeSlots();
   updateSummary();
   loadCourtAvailabilityForDate(selectedDate);
-
-  // Default hours
   document.getElementById('step4-num').classList.add('done');
 });
 </script>
