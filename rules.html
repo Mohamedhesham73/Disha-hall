@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disha Hall — Rules & Confirm</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body { background: var(--bg); min-height: 100vh; }
+
+    .rules-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+
+    /* ── Screen header ── */
+    .screen-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border-bottom: 1.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .screen-header-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--black);
+    }
+
+    .page-content { padding: 20px; }
+
+    /* ── Booking recap banner ── */
+    .recap-banner {
+      background: var(--black);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .recap-left { flex: 1; }
+    .recap-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .recap-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .recap-detail {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+    .recap-price {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      color: var(--orange);
+      letter-spacing: 2px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .recap-price-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      text-align: right;
+      letter-spacing: 1px;
+    }
+
+    /* ── Rules sections ── */
+    .rules-section {
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .rules-section-dark {
+      background: var(--black);
+    }
+
+    .rules-section-light {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+    }
+
+    .rules-section-orange {
+      background: rgba(255, 107, 53, 0.06);
+      border: 1.5px solid rgba(255, 107, 53, 0.2);
+    }
+
+    .rules-section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .rules-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .rules-title-text {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .rules-section-dark   .rules-title-text { color: var(--orange); }
+    .rules-section-light  .rules-title-text { color: var(--text-muted); }
+    .rules-section-orange .rules-title-text { color: var(--orange); }
+
+    /* ── Rules list ── */
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .rule-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .rules-section-dark   .rule-dot { background: var(--orange); }
+    .rules-section-light  .rule-dot { background: var(--black); }
+    .rules-section-orange .rule-dot { background: var(--orange); }
+
+    .rule-text {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .rules-section-dark   .rule-text { color: rgba(255,255,255,0.75); }
+    .rules-section-light  .rule-text { color: var(--text-secondary); }
+    .rules-section-orange .rule-text { color: #cc4400; }
+
+    .rule-text strong {
+      font-weight: 800;
+    }
+    .rules-section-dark   .rule-text strong { color: #fff; }
+    .rules-section-light  .rule-text strong { color: var(--black); }
+    .rules-section-orange .rule-text strong { color: var(--orange); }
+
+    /* ── Agree checkbox area ── */
+    .agree-area {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      transition: border-color var(--transition);
+    }
+    .agree-area.checked {
+      border-color: var(--orange);
+      background: rgba(255,107,53,0.03);
+    }
+
+    .agree-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .agree-row input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--orange);
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .agree-row label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .agree-row label strong {
+      color: var(--black);
+      font-weight: 800;
+    }
+
+    /* ── Loading spinner ── */
+    .btn-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error msg ── */
+    .error-msg {
+      display: none;
+      background: rgba(229,57,53,0.08);
+      border: 1px solid rgba(229,57,53,0.2);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--danger);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .error-msg.show { display: block; }
+
+    /* ── Section spacing ── */
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .section-num {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--black);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-num-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body class="court-bg-pattern">
+
+<div class="rules-wrapper">
+
+  <!-- Header -->
+  <div class="screen-header">
+    <a href="book.html" class="btn-back">&#8592;</a>
+    <div class="screen-header-title">RULES & CONFIRM</div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- Booking recap banner -->
+    <div class="recap-banner" data-aos="fade-down" data-aos-duration="500">
+      <div class="recap-left">
+        <div class="recap-tag">Your Booking Summary</div>
+        <div class="recap-title" id="recap-court">Court —</div>
+        <div class="recap-detail" id="recap-detail">Select date & time on previous page</div>
+      </div>
+      <div>
+        <div class="recap-price" id="recap-price">— EGP</div>
+        <div class="recap-price-label">Cash at desk</div>
+      </div>
+    </div>
+
+    <!-- ── Section 1: Academy Rules ── -->
+    <div class="section-label-row" data-aos="fade-up" data-aos-delay="60" data-aos-duration="400">
+      <div class="section-num">1</div>
+      <div class="section-num-label">Academy Restrictions</div>
+    </div>
+
+    <div class="rules-section rules-section-dark" data-aos="fade-up" data-aos-delay="100" data-aos-duration="420">
+      <div class="rules-section-title">
+        <div class="rules-icon">🚫</div>
+        <div class="rules-title-text">Rules You Must Follow</div>
+      </div>
+      <div class="rules-list">
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">No food or drinks are allowed on the court at any time.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text"><strong>Maximum 4 players</strong> per court at a time.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Children under 12 must be supervised by an adult at all times.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Your booking is <strong>only valid for the reserved time slot</strong>. Do not overstay.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">No smoking anywhere inside the academy building.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Respect other players and academy staff at all times.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">The academy is <strong>not responsible</strong> for lost or stolen personal belongings.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 2: Dress Code ── -->
+    <div class="section-label-row" data-aos="fade-up" data-aos-delay="160" data-aos-duration="400">
+      <div class="section-num">2</div>
+      <div class="section-num-label">Dress Code</div>
+    </div>
+
+    <div class="rules-section rules-section-light" data-aos="fade-up" data-aos-delay="200" data-aos-duration="420">
+      <div class="rules-section-title">
+        <div class="rules-icon">👟</div>
+        <div class="rules-title-text">What to Wear</div>
+      </div>
+      <div class="rules-list">
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text"><strong>Proper sports shoes are required</strong> — indoor court shoes only.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">No street shoes, sandals, flip-flops or bare feet on the court.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Sports attire only — no jeans, formal wear or heavy clothing.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Bring your own racket or rent one at the reception desk.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Shuttlecocks are available for purchase at the reception.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 3: Cancellation ── -->
+    <div class="section-label-row" data-aos="fade-up" data-aos-delay="260" data-aos-duration="400">
+      <div class="section-num">3</div>
+      <div class="section-num-label">Cancellation Policy</div>
+    </div>
+
+    <div class="rules-section rules-section-orange" data-aos="fade-up" data-aos-delay="300" data-aos-duration="420">
+      <div class="rules-section-title">
+        <div class="rules-icon">⚠️</div>
+        <div class="rules-title-text">Important — Read Carefully</div>
+      </div>
+      <div class="rules-list">
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">You may cancel your booking <strong>up to 30 minutes before</strong> your start time.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text"><strong>Cancellations after this window are not accepted</strong> and the court will still be charged.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">A cancelled court is released instantly and becomes available for other players.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">No-shows without cancellation may affect your ability to book in the future.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Payment reminder ── -->
+    <div class="rules-section rules-section-light" data-aos="fade-up" data-aos-delay="360" data-aos-duration="420" style="margin-bottom:20px;">
+      <div class="rules-section-title">
+        <div class="rules-icon">💵</div>
+        <div class="rules-title-text">Payment</div>
+      </div>
+      <div class="rules-list">
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Payment is <strong>cash only</strong> — paid at the reception when you arrive.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Rate is <strong>200 EGP per hour</strong> per court, regardless of number of players.</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-dot"></div>
+          <div class="rule-text">Please have the exact amount ready. No change is guaranteed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Agree checkbox ── -->
+    <div class="agree-area" id="agree-area" data-aos="fade-up" data-aos-delay="420" data-aos-duration="400">
+      <div class="agree-row">
+        <input type="checkbox" id="agree-check" onchange="onAgreeChange(this)" />
+        <label for="agree-check">
+          I have read and fully agree to the <strong>academy rules</strong>, <strong>dress code</strong>,
+          <strong>cancellation policy</strong> and <strong>payment terms</strong> stated above.
+          I understand that violation of these rules may result in removal from the academy.
+        </label>
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-msg" id="error-msg">Please agree to the rules before confirming your booking.</div>
+
+    <!-- Confirm button -->
+    <button class="btn btn-primary" id="btn-confirm" onclick="confirmBooking()" disabled style="opacity:0.45;">
+      <span class="btn-spinner" id="btn-spinner"></span>
+      <span id="btn-text">Confirm Booking</span>
+    </button>
+
+  </div><!-- /page-content -->
+
+</div><!-- /rules-wrapper -->
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_AUTH_DOMAIN",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+// ── Load draft from localStorage ──────────────────────────
+let draft = null;
+let currentUser = null;
+
+function loadDraft() {
+  const raw = localStorage.getItem('dh_draft');
+  if (!raw) { window.location.href = 'book.html'; return; }
+  draft = JSON.parse(raw);
+
+  // Populate recap banner
+  document.getElementById('recap-court').textContent =
+    `Court ${draft.courtNumber}`;
+
+  document.getElementById('recap-detail').textContent =
+    `${formatDate(draft.date)}  ·  ${draft.startTime} – ${draft.endTime}  ·  ${draft.hours} hr${draft.hours > 1 ? 's' : ''}`;
+
+  document.getElementById('recap-price').textContent =
+    `${draft.totalPrice} EGP`;
+}
+
+function formatDate(dateStr) {
+  const d     = new Date(dateStr + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff  = Math.round((d - today) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+}
+
+// ── Agree checkbox ────────────────────────────────────────
+function onAgreeChange(cb) {
+  const btn  = document.getElementById('btn-confirm');
+  const area = document.getElementById('agree-area');
+  if (cb.checked) {
+    btn.disabled   = false;
+    btn.style.opacity = '1';
+    area.classList.add('checked');
+    document.getElementById('error-msg').classList.remove('show');
+  } else {
+    btn.disabled   = true;
+    btn.style.opacity = '0.45';
+    area.classList.remove('checked');
+  }
+}
+
+// ── Generate booking reference ────────────────────────────
+function genRef() {
+  return 'DH-' + Math.floor(10000 + Math.random() * 90000);
+}
+
+// ── Confirm booking → write to Firestore ──────────────────
+async function confirmBooking() {
+  if (!document.getElementById('agree-check').checked) {
+    document.getElementById('error-msg').classList.add('show');
+    return;
+  }
+  if (!draft || !currentUser) return;
+
+  // Loading state
+  document.getElementById('btn-confirm').disabled   = true;
+  document.getElementById('btn-spinner').style.display = 'inline-block';
+  document.getElementById('btn-text').textContent   = 'Confirming...';
+  document.getElementById('error-msg').classList.remove('show');
+
+  const ref = genRef();
+
+  try {
+    // Write booking to Firestore
+    await db.collection('bookings').add({
+      playerId:    currentUser.uid,
+      playerName:  currentUser.displayName || '',
+      playerEmail: currentUser.email,
+      courtNumber: draft.courtNumber,
+      date:        draft.date,
+      startTime:   draft.startTime,
+      endTime:     draft.endTime,
+      hours:       draft.hours,
+      totalPrice:  draft.totalPrice,
+      status:      'confirmed',
+      reference:   ref,
+      lang:        localStorage.getItem('dh_lang') || 'en',
+      createdAt:   firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Save ref for confirm page
+    localStorage.setItem('dh_ref', ref);
+    localStorage.removeItem('dh_draft');
+
+    // Go to confirmation page
+    window.location.href = 'confirm.html';
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('btn-spinner').style.display = 'none';
+    document.getElementById('btn-text').textContent = 'Confirm Booking';
+    document.getElementById('btn-confirm').disabled = false;
+    document.getElementById('error-msg').textContent =
+      'Something went wrong. Please try again.';
+    document.getElementById('error-msg').classList.add('show');
+  }
+}
+
+// ── Auth gate ─────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+  if (!user) { window.location.href = 'signup.html'; return; }
+  currentUser = user;
+  loadDraft();
+});
+</script>
+</body>
+</html>

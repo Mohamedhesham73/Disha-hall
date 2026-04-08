@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disha Hall — Home</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body { background: var(--bg); min-height: 100vh; }
+
+    .home-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 80px;
+    }
+
+    /* ── Navbar ── */
+    .home-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border-bottom: 1.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .home-nav-logo {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: var(--black);
+    }
+    .home-nav-logo span { color: var(--orange); }
+
+    .nav-user-info { text-align: right; }
+    .nav-user-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--black);
+      line-height: 1.2;
+    }
+    .nav-user-role {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+
+    /* ── Page sections ── */
+    .page-content { padding: 20px; }
+
+    /* ── Greeting ── */
+    .greeting-block { margin-bottom: 20px; }
+    .greeting-hi {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .greeting-name {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: var(--black);
+      line-height: 1;
+    }
+    .greeting-name span { color: var(--orange); }
+
+    /* ── Open status bar ── */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+      animation: gps-pulse 2s infinite;
+    }
+    .status-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+    .status-text span { color: var(--success); }
+    .status-time {
+      margin-left: auto;
+      font-family: var(--font-heading);
+      font-size: 16px;
+      color: var(--black);
+      letter-spacing: 1px;
+    }
+
+    /* ── Stats ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      transition: all var(--transition);
+    }
+    .stat-card:hover {
+      border-color: rgba(255,107,53,0.3);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 30px;
+      color: var(--black);
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .stat-value .accent { color: var(--orange); }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .stat-icon { font-size: 18px; margin-bottom: 6px; }
+
+    /* ── Hero booking card ── */
+    .hero-book-card {
+      background: var(--black);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-book-card::before {
+      content: '🏸';
+      position: absolute;
+      right: -10px;
+      top: -10px;
+      font-size: 80px;
+      opacity: 0.06;
+      transform: rotate(-30deg);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .hero-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .hero-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* ── Court availability mini grid ── */
+    .mini-courts {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      margin-bottom: 16px;
+    }
+
+    .mini-court {
+      height: 28px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 400;
+      transition: all var(--transition);
+    }
+
+    .mini-court.avail {
+      background: rgba(255,107,53,0.15);
+      color: var(--orange);
+      border: 1px solid rgba(255,107,53,0.3);
+    }
+    .mini-court.taken {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ── Section headers ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      letter-spacing: 1.5px;
+      color: var(--black);
+    }
+    .section-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--orange);
+      text-decoration: none;
+      transition: opacity var(--transition);
+    }
+    .section-link:hover { opacity: 0.7; }
+
+    /* ── Booking items ── */
+    .booking-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 10px;
+      transition: all var(--transition);
+    }
+    .booking-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+      border-color: rgba(255,107,53,0.2);
+    }
+
+    .booking-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .booking-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--black);
+    }
+    .booking-detail {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .booking-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .booking-price {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--orange);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 32px 20px;
+      background: var(--bg-card);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      letter-spacing: 1px;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+    .empty-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+
+    /* ── Quick info cards ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-card {
+      background: var(--bg-card-alt);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+    .info-card-val {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      color: var(--black);
+      letter-spacing: 1px;
+    }
+    .info-card-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-top: 3px;
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display: flex;
+      background: var(--bg-card);
+      border-top: 1.5px solid var(--border);
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      z-index: 100;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .bnav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 8px 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all var(--transition);
+    }
+    .bnav-icon { font-size: 20px; margin-bottom: 3px; }
+    .bnav-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+    }
+    .bnav-item.active .bnav-label { color: var(--orange); }
+    .bnav-item:hover .bnav-label  { color: var(--orange); }
+
+    /* ── Live clock ── */
+    .live-clock {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 3px 10px;
+    }
+
+    /* ── Logout btn ── */
+    .logout-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Loading skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-card-alt) 25%, var(--border) 50%, var(--bg-card-alt) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: var(--radius-md);
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body class="court-bg-pattern">
+
+<div class="home-wrapper">
+
+  <!-- Navbar -->
+  <nav class="home-nav">
+    <div class="home-nav-logo">DISHA <span>HALL</span></div>
+    <div class="nav-right">
+      <div class="live-clock" id="live-clock">--:--</div>
+      <div class="nav-user-info">
+        <div class="nav-user-name" id="nav-name">...</div>
+        <div class="nav-user-role">Player</div>
+      </div>
+      <div class="avatar" id="nav-avatar">?</div>
+    </div>
+  </nav>
+
+  <div class="page-content">
+
+    <!-- Greeting -->
+    <div class="greeting-block" data-aos="fade-down" data-aos-duration="500">
+      <div class="greeting-hi" id="greeting-hi">Good evening 👋</div>
+      <div class="greeting-name">WELCOME, <span id="greeting-name">PLAYER</span></div>
+    </div>
+
+    <!-- Open status -->
+    <div data-aos="fade-up" data-aos-delay="80" data-aos-duration="400">
+      <div class="status-bar">
+        <div class="status-dot" id="status-dot"></div>
+        <div class="status-text" id="status-text"><span>Open Now</span> · Closes at 11:00 PM</div>
+        <div class="status-time" id="status-hours">9AM–11PM</div>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-grid" data-aos="fade-up" data-aos-delay="120" data-aos-duration="400">
+      <div class="stat-card">
+        <div class="stat-icon">🏸</div>
+        <div class="stat-value"><span class="accent" id="courts-avail">—</span> <span style="font-size:18px;color:var(--text-muted);">/ 6</span></div>
+        <div class="stat-label">Courts Available</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value"><span class="accent">200</span></div>
+        <div class="stat-label">EGP Per Hour · Cash</div>
+      </div>
+    </div>
+
+    <!-- Hero booking card -->
+    <div data-aos="fade-up" data-aos-delay="160" data-aos-duration="450">
+      <div class="hero-book-card">
+        <div class="hero-tag">TODAY · EVERY DAY</div>
+        <div class="hero-title">Ready to play? 🏸</div>
+        <div class="hero-sub">Choose from 6 courts · Pay cash at reception<br>Open 9:00 AM – 11:00 PM daily</div>
+
+        <!-- Mini courts availability -->
+        <div class="mini-courts" id="mini-courts">
+          <div class="mini-court avail">1</div>
+          <div class="mini-court avail">2</div>
+          <div class="mini-court taken">3</div>
+          <div class="mini-court avail">4</div>
+          <div class="mini-court taken">5</div>
+          <div class="mini-court avail">6</div>
+        </div>
+
+        <a href="book.html" class="btn btn-primary" style="margin-top:0;">
+          Book a Court Now
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick info -->
+    <div class="info-grid" data-aos="fade-up" data-aos-delay="200" data-aos-duration="400">
+      <div class="info-card">
+        <div class="info-card-val">9 AM</div>
+        <div class="info-card-lbl">Opens Daily</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-val">11 PM</div>
+        <div class="info-card-lbl">Closes Daily</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-val">150m</div>
+        <div class="info-card-lbl">GPS Radius</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-val">30m</div>
+        <div class="info-card-lbl">Cancel Window</div>
+      </div>
+    </div>
+
+    <!-- Upcoming bookings -->
+    <div data-aos="fade-up" data-aos-delay="240" data-aos-duration="400">
+      <div class="section-header">
+        <div class="section-title">MY BOOKINGS</div>
+        <a href="mybookings.html" class="section-link">View All →</a>
+      </div>
+
+      <div id="bookings-container">
+        <!-- Skeleton loader -->
+        <div class="skeleton" style="height:100px;margin-bottom:10px;" id="skel-1"></div>
+        <div class="skeleton" style="height:100px;" id="skel-2"></div>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <div style="text-align:center;margin-top:28px;" data-aos="fade-up" data-aos-delay="280">
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </div>
+
+  </div><!-- /page-content -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="home.html"       class="bnav-item active"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></a>
+    <a href="book.html"       class="bnav-item"><div class="bnav-icon">🏸</div><div class="bnav-label">Book</div></a>
+    <a href="mybookings.html" class="bnav-item"><div class="bnav-icon">📋</div><div class="bnav-label">My Bookings</div></a>
+  </nav>
+
+</div><!-- /home-wrapper -->
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase Config ───────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_AUTH_DOMAIN",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── AOS ───────────────────────────────────────────────────
+AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+// ── Live clock ────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h   = String(now.getHours()).padStart(2,'0');
+  const m   = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('live-clock').textContent = h + ':' + m;
+
+  // Update greeting
+  const hour = now.getHours();
+  const greetings = {
+    en: hour < 12 ? 'Good morning 👋' : hour < 17 ? 'Good afternoon 👋' : 'Good evening 👋',
+    ar: hour < 12 ? 'صباح الخير 👋'  : hour < 17 ? 'مساء الخير 👋'     : 'مساء النور 👋',
+    zh: hour < 12 ? '早上好 👋'       : hour < 17 ? '下午好 👋'          : '晚上好 👋',
+    ms: hour < 12 ? 'Selamat pagi 👋': hour < 17 ? 'Selamat petang 👋' : 'Selamat malam 👋',
+    hi: hour < 12 ? 'सुप्रभात 👋'     : hour < 17 ? 'नमस्ते 👋'          : 'शुभ संध्या 👋',
+    id: hour < 12 ? 'Selamat pagi 👋': hour < 17 ? 'Selamat siang 👋'  : 'Selamat malam 👋',
+  };
+  const lang = localStorage.getItem('dh_lang') || 'en';
+  document.getElementById('greeting-hi').textContent = greetings[lang] || greetings['en'];
+
+  // Academy open/closed
+  const open   = hour >= 9 && hour < 23;
+  const dot    = document.getElementById('status-dot');
+  const txt    = document.getElementById('status-text');
+  dot.style.background = open ? 'var(--success)' : 'var(--danger)';
+  txt.innerHTML = open
+    ? '<span style="color:var(--success)">Open Now</span> · Closes at 11:00 PM'
+    : '<span style="color:var(--danger)">Closed</span> · Opens at 9:00 AM';
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+// ── Load player profile ───────────────────────────────────
+function loadProfile(uid) {
+  db.collection('players').doc(uid).get().then(doc => {
+    if (!doc.exists) return;
+    const data = doc.data();
+    const name = data.name || 'Player';
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+
+    document.getElementById('nav-name').textContent      = name.split(' ')[0];
+    document.getElementById('greeting-name').textContent = name.split(' ')[0].toUpperCase();
+    document.getElementById('nav-avatar').textContent    = initials;
+  });
+}
+
+// ── Load court availability (live) ───────────────────────
+function loadCourtAvailability() {
+  const today = new Date().toISOString().split('T')[0];
+
+  db.collection('bookings')
+    .where('date', '==', today)
+    .where('status', '==', 'confirmed')
+    .onSnapshot(snap => {
+      const takenCourts = new Set(snap.docs.map(d => d.data().courtNumber));
+      const available   = 6 - takenCourts.size;
+
+      document.getElementById('courts-avail').textContent = available;
+
+      // Update mini courts in hero card
+      const mini = document.getElementById('mini-courts');
+      mini.innerHTML = '';
+      for (let i = 1; i <= 6; i++) {
+        const div = document.createElement('div');
+        div.className = 'mini-court ' + (takenCourts.has(i) ? 'taken' : 'avail');
+        div.textContent = i;
+        mini.appendChild(div);
+      }
+    });
+}
+
+// ── Load upcoming bookings ────────────────────────────────
+function loadUpcomingBookings(uid) {
+  const today = new Date().toISOString().split('T')[0];
+
+  db.collection('bookings')
+    .where('playerId', '==', uid)
+    .where('status', '==', 'confirmed')
+    .where('date', '>=', today)
+    .orderBy('date', 'asc')
+    .orderBy('startTime', 'asc')
+    .limit(3)
+    .onSnapshot(snap => {
+      // Remove skeletons
+      ['skel-1','skel-2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+      });
+
+      const container = document.getElementById('bookings-container');
+
+      if (snap.empty) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🏸</div>
+            <div class="empty-title">NO UPCOMING BOOKINGS</div>
+            <div class="empty-sub">Book a court and start playing!</div>
+            <a href="book.html" class="btn btn-primary" style="width:auto;padding:10px 28px;">Book Now</a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      snap.docs.forEach(doc => {
+        const b    = doc.data();
+        const card = buildBookingCard(doc.id, b, true);
+        container.appendChild(card);
+      });
+    });
+}
+
+// ── Build a booking card element ──────────────────────────
+function buildBookingCard(id, b, showCancel) {
+  const div = document.createElement('div');
+  div.className = 'booking-card';
+
+  const canCancel = canCancelBooking(b.date, b.startTime);
+  const dateLabel = formatDate(b.date);
+
+  div.innerHTML = `
+    <div class="booking-top">
+      <div class="booking-title">Court ${b.courtNumber}</div>
+      <span class="badge badge-orange">Upcoming</span>
+    </div>
+    <div class="booking-detail">
+      ${dateLabel} &nbsp;·&nbsp; ${b.startTime} – ${b.endTime}
+      &nbsp;·&nbsp; ${b.hours} hr${b.hours > 1 ? 's' : ''}
+    </div>
+    <div class="booking-footer">
+      <div class="booking-price">${b.totalPrice} EGP</div>
+      ${showCancel ? `
+        <button
+          class="btn btn-danger btn-sm"
+          ${canCancel ? '' : 'disabled title="Cannot cancel less than 30 min before"'}
+          onclick="cancelBooking('${id}', this)">
+          ${canCancel ? 'Cancel' : 'Too Late'}
+        </button>` : ''}
+    </div>`;
+  return div;
+}
+
+// ── Can cancel? (> 30 min before start) ──────────────────
+function canCancelBooking(date, startTime) {
+  const [h, m]  = startTime.replace(' AM','').replace(' PM','').split(':').map(Number);
+  const isPM    = startTime.includes('PM') && h !== 12;
+  const hour24  = isPM ? h + 12 : h;
+  const start   = new Date(date + 'T' + String(hour24).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':00');
+  const diff    = (start - new Date()) / 60000; // minutes
+  return diff > 30;
+}
+
+// ── Cancel a booking ──────────────────────────────────────
+async function cancelBooking(bookingId, btn) {
+  if (!confirm('Are you sure you want to cancel this booking?')) return;
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    await db.collection('bookings').doc(bookingId).update({ status: 'cancelled' });
+  } catch (e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.textContent = 'Cancel';
+  }
+}
+
+// ── Format date nicely ────────────────────────────────────
+function formatDate(dateStr) {
+  const d     = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+}
+
+// ── Logout ────────────────────────────────────────────────
+async function handleLogout() {
+  await auth.signOut();
+  localStorage.removeItem('dh_lang');
+  window.location.href = 'index.html';
+}
+
+// ── Auth gate ─────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = 'signup.html';
+    return;
+  }
+  loadProfile(user.uid);
+  loadCourtAvailability();
+  loadUpcomingBookings(user.uid);
+});
+</script>
+</body>
+</html>

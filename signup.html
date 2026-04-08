@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disha Hall — Sign Up / Login</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body { background: var(--bg); min-height: 100vh; }
+
+    .auth-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 20px 48px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1.5px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .top-logo {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: var(--black);
+    }
+    .top-logo span { color: var(--orange); }
+
+    .flag-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 5px 12px 5px 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all var(--transition);
+    }
+    .flag-chip:hover { border-color: var(--orange); color: var(--orange); }
+    .flag-chip img { width: 22px; height: 15px; object-fit: cover; border-radius: 3px; }
+
+    /* ── Tab switcher ── */
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-card-alt);
+      border-radius: var(--radius-lg);
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all var(--transition);
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      letter-spacing: 0.3px;
+    }
+
+    .auth-tab.active {
+      background: var(--bg-card);
+      color: var(--orange);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* ── Form panels ── */
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+
+    /* ── Password wrapper ── */
+    .pw-wrapper { position: relative; }
+    .pw-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-muted);
+      padding: 0;
+      line-height: 1;
+    }
+    .pw-wrapper .form-control { padding-right: 44px; }
+
+    /* ── Error / success messages ── */
+    .auth-msg {
+      display: none;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .auth-msg.error   { background: rgba(229,57,53,0.08); color: var(--danger); border: 1px solid rgba(229,57,53,0.2); }
+    .auth-msg.success { background: rgba(34,197,94,0.08); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+    .auth-msg.show { display: block; }
+
+    /* ── Divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Loading spinner in button ── */
+    .btn-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Welcome card (bottom) ── */
+    .welcome-card {
+      background: var(--black);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .welcome-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .welcome-text-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      letter-spacing: 1.5px;
+      color: var(--orange);
+      margin-bottom: 3px;
+    }
+    .welcome-text-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+
+    /* ── Input validation states ── */
+    .form-control.is-invalid { border-color: var(--danger); }
+    .form-control.is-valid   { border-color: var(--success); }
+    .field-error {
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 4px;
+      display: none;
+    }
+    .field-error.show { display: block; }
+  </style>
+</head>
+<body class="court-bg-pattern">
+
+<div class="auth-wrapper">
+
+  <!-- Top bar -->
+  <div class="top-bar" data-aos="fade-down" data-aos-duration="500">
+    <div class="top-logo">DISHA <span>HALL</span></div>
+    <a href="index.html" class="flag-chip" id="lang-chip">
+      <img src="imgs/flags/UK.webp" alt="lang" id="flag-chip-img" />
+      <span id="flag-chip-label">EN</span>
+    </a>
+  </div>
+
+  <!-- GPS bar -->
+  <div data-aos="fade-up" data-aos-delay="80" data-aos-duration="450">
+    <div class="gps-bar">
+      <div class="gps-dot"></div>
+      <div class="gps-text" id="gps-text">Location verified — Disha Hall, Nasr City ✓</div>
+    </div>
+  </div>
+
+  <!-- Auth tabs -->
+  <div class="auth-tabs" data-aos="fade-up" data-aos-delay="140" data-aos-duration="450">
+    <button class="auth-tab active" id="tab-signup" onclick="switchTab('signup')" data-i18n="tab_signup">Create Account</button>
+    <button class="auth-tab"        id="tab-login"  onclick="switchTab('login')"  data-i18n="tab_login">Log In</button>
+  </div>
+
+  <!-- ══ SIGN UP PANEL ══════════════════════════════════════ -->
+  <div class="auth-panel active" id="panel-signup" data-aos="fade-up" data-aos-delay="180" data-aos-duration="450">
+
+    <div id="signup-msg" class="auth-msg"></div>
+
+    <div class="form-group">
+      <label class="form-label" data-i18n="label_name">Full Name</label>
+      <input class="form-control" type="text" id="signup-name" placeholder="Ahmed Hassan" autocomplete="name" />
+      <div class="field-error" id="err-name"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" data-i18n="label_phone">Phone Number</label>
+      <input class="form-control" type="tel" id="signup-phone" placeholder="+20 100 000 0000" autocomplete="tel" />
+      <div class="field-error" id="err-phone"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" data-i18n="label_email">Email Address</label>
+      <input class="form-control" type="email" id="signup-email" placeholder="you@email.com" autocomplete="email" />
+      <div class="field-error" id="err-email"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" data-i18n="label_password">Password</label>
+      <div class="pw-wrapper">
+        <input class="form-control" type="password" id="signup-password" placeholder="Min. 6 characters" autocomplete="new-password" />
+        <button class="pw-toggle" onclick="togglePw('signup-password', this)">👁</button>
+      </div>
+      <div class="field-error" id="err-pw"></div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-signup" onclick="handleSignup()">
+      <span class="btn-spinner" id="spinner-signup"></span>
+      <span data-i18n="btn_create">Create Account</span>
+    </button>
+
+    <div class="or-divider"><span data-i18n="or">or</span></div>
+
+    <button class="btn btn-dark" onclick="switchTab('login')">
+      <span data-i18n="btn_have_account">Already have an account? Log In</span>
+    </button>
+
+  </div>
+
+  <!-- ══ LOGIN PANEL ════════════════════════════════════════ -->
+  <div class="auth-panel" id="panel-login" data-aos="fade-up" data-aos-duration="400">
+
+    <div id="login-msg" class="auth-msg"></div>
+
+    <div class="form-group">
+      <label class="form-label" data-i18n="label_email">Email Address</label>
+      <input class="form-control" type="email" id="login-email" placeholder="you@email.com" autocomplete="email" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" data-i18n="label_password">Password</label>
+      <div class="pw-wrapper">
+        <input class="form-control" type="password" id="login-password" placeholder="Your password" autocomplete="current-password" />
+        <button class="pw-toggle" onclick="togglePw('login-password', this)">👁</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-login" onclick="handleLogin()">
+      <span class="btn-spinner" id="spinner-login"></span>
+      <span data-i18n="btn_login">Log In</span>
+    </button>
+
+    <div class="or-divider"><span data-i18n="or">or</span></div>
+
+    <button class="btn btn-dark" onclick="switchTab('signup')">
+      <span data-i18n="btn_no_account">Don't have an account? Sign Up</span>
+    </button>
+
+  </div>
+
+  <!-- Welcome card -->
+  <div class="welcome-card" data-aos="fade-up" data-aos-delay="300" data-aos-duration="500">
+    <div class="welcome-icon">🏸</div>
+    <div>
+      <div class="welcome-text-title">WELCOME TO DISHA HALL</div>
+      <div class="welcome-text-sub">6 courts · 200 EGP/hr · 9 AM – 11 PM daily<br>Nasr City, Cairo, Egypt</div>
+    </div>
+  </div>
+
+</div><!-- /auth-wrapper -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AOS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<!-- Firebase compat (for auth) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase Config (replace with your own) ───────────────
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_AUTH_DOMAIN",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── AOS ───────────────────────────────────────────────────
+AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+// ── Language config ───────────────────────────────────────
+const langConfig = {
+  en: { flag: 'imgs/flags/UK.webp',        label: 'EN', dir: 'ltr' },
+  ar: { flag: 'imgs/flags/egypt.svg',      label: 'AR', dir: 'rtl' },
+  zh: { flag: 'imgs/flags/china.webp',     label: 'ZH', dir: 'ltr' },
+  ms: { flag: 'imgs/flags/malaysia.png',   label: 'MS', dir: 'ltr' },
+  hi: { flag: 'imgs/flags/india.jpg',      label: 'HI', dir: 'ltr' },
+  id: { flag: 'imgs/flags/Indonesia.svg',  label: 'ID', dir: 'ltr' },
+};
+
+// ── Translations (all UI strings per language) ────────────
+const translations = {
+  en: {
+    tab_signup:'Create Account', tab_login:'Log In',
+    label_name:'Full Name', label_phone:'Phone Number',
+    label_email:'Email Address', label_password:'Password',
+    btn_create:'Create Account', btn_login:'Log In',
+    btn_have_account:'Already have an account? Log In',
+    btn_no_account:"Don't have an account? Sign Up",
+    or:'or',
+    gps_text:'Location verified — Disha Hall, Nasr City ✓',
+    err_name:'Please enter your full name',
+    err_phone:'Please enter a valid phone number',
+    err_email:'Please enter a valid email',
+    err_pw:'Password must be at least 6 characters',
+    err_generic:'Something went wrong. Please try again.',
+    success_signup:'Account created! Redirecting...',
+    success_login:'Welcome back! Redirecting...',
+  },
+  ar: {
+    tab_signup:'إنشاء حساب', tab_login:'تسجيل الدخول',
+    label_name:'الاسم الكامل', label_phone:'رقم الهاتف',
+    label_email:'البريد الإلكتروني', label_password:'كلمة المرور',
+    btn_create:'إنشاء حساب', btn_login:'تسجيل الدخول',
+    btn_have_account:'لديك حساب بالفعل؟ تسجيل الدخول',
+    btn_no_account:'ليس لديك حساب؟ سجل الآن',
+    or:'أو',
+    gps_text:'تم التحقق من الموقع — قاعة ديشا، مدينة نصر ✓',
+    err_name:'الرجاء إدخال اسمك الكامل',
+    err_phone:'الرجاء إدخال رقم هاتف صحيح',
+    err_email:'الرجاء إدخال بريد إلكتروني صحيح',
+    err_pw:'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
+    err_generic:'حدث خطأ ما. حاول مرة أخرى.',
+    success_signup:'تم إنشاء الحساب! جارٍ التحويل...',
+    success_login:'مرحباً بعودتك! جارٍ التحويل...',
+  },
+  zh: {
+    tab_signup:'创建账户', tab_login:'登录',
+    label_name:'全名', label_phone:'手机号码',
+    label_email:'电子邮箱', label_password:'密码',
+    btn_create:'创建账户', btn_login:'登录',
+    btn_have_account:'已有账户？登录',
+    btn_no_account:'没有账户？注册',
+    or:'或',
+    gps_text:'位置已验证 — Disha Hall，纳斯尔城 ✓',
+    err_name:'请输入您的全名',
+    err_phone:'请输入有效的电话号码',
+    err_email:'请输入有效的电子邮箱',
+    err_pw:'密码至少需要6个字符',
+    err_generic:'出了些问题，请重试。',
+    success_signup:'账户创建成功！正在跳转...',
+    success_login:'欢迎回来！正在跳转...',
+  },
+  ms: {
+    tab_signup:'Daftar Akaun', tab_login:'Log Masuk',
+    label_name:'Nama Penuh', label_phone:'Nombor Telefon',
+    label_email:'Alamat E-mel', label_password:'Kata Laluan',
+    btn_create:'Daftar Akaun', btn_login:'Log Masuk',
+    btn_have_account:'Sudah ada akaun? Log Masuk',
+    btn_no_account:'Tiada akaun? Daftar',
+    or:'atau',
+    gps_text:'Lokasi disahkan — Disha Hall, Nasr City ✓',
+    err_name:'Sila masukkan nama penuh anda',
+    err_phone:'Sila masukkan nombor telefon yang sah',
+    err_email:'Sila masukkan e-mel yang sah',
+    err_pw:'Kata laluan mestilah sekurang-kurangnya 6 aksara',
+    err_generic:'Ada sesuatu yang tidak kena. Cuba lagi.',
+    success_signup:'Akaun berjaya dibuat! Mengalihkan...',
+    success_login:'Selamat kembali! Mengalihkan...',
+  },
+  hi: {
+    tab_signup:'अकाउंट बनाएं', tab_login:'लॉग इन',
+    label_name:'पूरा नाम', label_phone:'फ़ोन नंबर',
+    label_email:'ईमेल पता', label_password:'पासवर्ड',
+    btn_create:'अकाउंट बनाएं', btn_login:'लॉग इन',
+    btn_have_account:'पहले से अकाउंट है? लॉग इन करें',
+    btn_no_account:'अकाउंट नहीं है? साइन अप करें',
+    or:'या',
+    gps_text:'स्थान सत्यापित — Disha Hall, Nasr City ✓',
+    err_name:'कृपया अपना पूरा नाम दर्ज करें',
+    err_phone:'कृपया वैध फ़ोन नंबर दर्ज करें',
+    err_email:'कृपया वैध ईमेल दर्ज करें',
+    err_pw:'पासवर्ड कम से कम 6 अक्षर का होना चाहिए',
+    err_generic:'कुछ गलत हो गया। फिर कोशिश करें।',
+    success_signup:'अकाउंट बना लिया! रीडायरेक्ट हो रहा है...',
+    success_login:'वापस स्वागत है! रीडायरेक्ट हो रहा है...',
+  },
+  id: {
+    tab_signup:'Buat Akun', tab_login:'Masuk',
+    label_name:'Nama Lengkap', label_phone:'Nomor Telepon',
+    label_email:'Alamat Email', label_password:'Kata Sandi',
+    btn_create:'Buat Akun', btn_login:'Masuk',
+    btn_have_account:'Sudah punya akun? Masuk',
+    btn_no_account:'Belum punya akun? Daftar',
+    or:'atau',
+    gps_text:'Lokasi terverifikasi — Disha Hall, Nasr City ✓',
+    err_name:'Harap masukkan nama lengkap Anda',
+    err_phone:'Harap masukkan nomor telepon yang valid',
+    err_email:'Harap masukkan email yang valid',
+    err_pw:'Kata sandi minimal 6 karakter',
+    err_generic:'Ada yang salah. Coba lagi.',
+    success_signup:'Akun berhasil dibuat! Mengalihkan...',
+    success_login:'Selamat datang kembali! Mengalihkan...',
+  },
+};
+
+// ── Active lang ───────────────────────────────────────────
+let lang = localStorage.getItem('dh_lang') || 'en';
+let t    = translations[lang] || translations['en'];
+
+// ── Apply language on load ────────────────────────────────
+function applyLang() {
+  const cfg = langConfig[lang] || langConfig['en'];
+
+  // RTL
+  document.getElementById('html-root').setAttribute('dir', cfg.dir);
+  if (cfg.dir === 'rtl') document.body.classList.add('rtl');
+
+  // Flag chip
+  document.getElementById('flag-chip-img').src = cfg.flag;
+  document.getElementById('flag-chip-label').textContent = cfg.label;
+
+  // GPS text
+  document.getElementById('gps-text').textContent = t.gps_text;
+
+  // Translate all [data-i18n] elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+}
+
+// ── Tab switch ────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'   + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  clearMessages();
+}
+
+function clearMessages() {
+  document.querySelectorAll('.auth-msg').forEach(m => {
+    m.classList.remove('show', 'error', 'success');
+    m.textContent = '';
+  });
+  document.querySelectorAll('.form-control').forEach(f => {
+    f.classList.remove('is-invalid', 'is-valid');
+  });
+  document.querySelectorAll('.field-error').forEach(e => {
+    e.classList.remove('show');
+    e.textContent = '';
+  });
+}
+
+function showMsg(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'auth-msg ' + type + ' show';
+  el.textContent = msg;
+}
+
+function showFieldError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+// ── Toggle password visibility ────────────────────────────
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; btn.textContent = '👁';  }
+}
+
+// ── Loading state ─────────────────────────────────────────
+function setLoading(btnId, spinnerId, loading) {
+  const btn     = document.getElementById(btnId);
+  const spinner = document.getElementById(spinnerId);
+  btn.disabled             = loading;
+  spinner.style.display    = loading ? 'inline-block' : 'none';
+}
+
+// ── Validate signup ───────────────────────────────────────
+function validateSignup() {
+  let valid = true;
+  clearMessages();
+
+  const name  = document.getElementById('signup-name').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-password').value;
+
+  if (!name) {
+    showFieldError('err-name', t.err_name);
+    document.getElementById('signup-name').classList.add('is-invalid');
+    valid = false;
+  }
+  if (!phone || phone.length < 7) {
+    showFieldError('err-phone', t.err_phone);
+    document.getElementById('signup-phone').classList.add('is-invalid');
+    valid = false;
+  }
+  if (!email || !email.includes('@')) {
+    showFieldError('err-email', t.err_email);
+    document.getElementById('signup-email').classList.add('is-invalid');
+    valid = false;
+  }
+  if (!pw || pw.length < 6) {
+    showFieldError('err-pw', t.err_pw);
+    document.getElementById('signup-password').classList.add('is-invalid');
+    valid = false;
+  }
+  return valid;
+}
+
+// ── Handle Sign Up ────────────────────────────────────────
+async function handleSignup() {
+  if (!validateSignup()) return;
+  setLoading('btn-signup', 'spinner-signup', true);
+
+  const name  = document.getElementById('signup-name').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-password').value;
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pw);
+    const uid  = cred.user.uid;
+
+    // Save profile to Firestore
+    await db.collection('players').doc(uid).set({
+      name,
+      phone,
+      email,
+      lang,
+      country: langConfig[lang]?.label || 'EN',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    showMsg('signup-msg', 'success', t.success_signup);
+    setTimeout(() => window.location.href = 'home.html', 1200);
+
+  } catch (err) {
+    console.error(err);
+    const msg = err.code === 'auth/email-already-in-use'
+      ? (lang === 'ar' ? 'هذا البريد الإلكتروني مستخدم بالفعل' : 'This email is already registered. Try logging in.')
+      : t.err_generic;
+    showMsg('signup-msg', 'error', msg);
+    setLoading('btn-signup', 'spinner-signup', false);
+  }
+}
+
+// ── Handle Login ──────────────────────────────────────────
+async function handleLogin() {
+  clearMessages();
+  setLoading('btn-login', 'spinner-login', true);
+
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-password').value;
+
+  if (!email || !pw) {
+    showMsg('login-msg', 'error', t.err_generic);
+    setLoading('btn-login', 'spinner-login', false);
+    return;
+  }
+
+  try {
+    await auth.signInWithEmailAndPassword(email, pw);
+    showMsg('login-msg', 'success', t.success_login);
+    setTimeout(() => window.location.href = 'home.html', 1200);
+
+  } catch (err) {
+    console.error(err);
+    const msg = err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'
+      ? (lang === 'ar' ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة' : 'Incorrect email or password.')
+      : t.err_generic;
+    showMsg('login-msg', 'error', msg);
+    setLoading('btn-login', 'spinner-login', false);
+  }
+}
+
+// ── Redirect if already logged in ────────────────────────
+auth.onAuthStateChanged(user => {
+  if (user) window.location.href = 'home.html';
+});
+
+// ── Run ───────────────────────────────────────────────────
+applyLang();
+</script>
+</body>
+</html>

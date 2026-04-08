@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disha Hall — Court Booking</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ── Page-specific styles ── */
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    .index-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Shuttlecock decoration */
+    .shuttlecock {
+      position: fixed;
+      top: -60px;
+      left: -60px;
+      font-size: 48px;
+      opacity: 0.06;
+      pointer-events: none;
+      animation: float-shuttle 18s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes float-shuttle {
+      0%   { transform: translate(-60px, -60px) rotate(0deg); }
+      100% { transform: translate(110vw, 110vh) rotate(720deg); }
+    }
+
+    /* GPS blocked overlay */
+    #gps-blocked {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+    }
+
+    #gps-blocked.show { display: flex; }
+
+    .blocked-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .blocked-title {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+
+    .blocked-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 16px;
+    }
+
+    .blocked-msg {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    /* GPS loading */
+    #gps-loading {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .gps-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Main content */
+    #main-content { display: none; flex-direction: column; flex: 1; }
+    #main-content.show { display: flex; }
+
+    /* Logo */
+    .logo-area {
+      text-align: center;
+      padding: 36px 0 12px;
+    }
+
+    .logo-main {
+      font-family: var(--font-heading);
+      font-size: 48px;
+      letter-spacing: 6px;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .logo-main span { color: var(--orange); }
+
+    .logo-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .logo-divider {
+      width: 40px;
+      height: 3px;
+      background: var(--orange);
+      border-radius: 2px;
+      margin: 14px auto 0;
+    }
+
+    /* Section headers */
+    .section-head {
+      text-align: center;
+      margin: 28px 0 20px;
+    }
+
+    .section-head h2 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+
+    .section-head p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Lang cards */
+    .lang-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .lang-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      display: block;
+      text-decoration: none;
+    }
+
+    .lang-card:hover {
+      border-color: var(--orange);
+      background: rgba(255,107,53,0.04);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(255,107,53,0.15);
+    }
+
+    .lang-card .flag-img {
+      width: 56px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin: 0 auto 10px;
+      display: block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .lang-card .country-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .lang-card .lang-native {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Info strip */
+    .info-strip {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      background: var(--black);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-top: 28px;
+    }
+
+    .info-strip-item {
+      text-align: center;
+    }
+
+    .info-strip-val {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: var(--orange);
+      letter-spacing: 1px;
+    }
+
+    .info-strip-lbl {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .info-strip-div {
+      width: 1px;
+      background: rgba(255,255,255,0.1);
+      align-self: stretch;
+    }
+
+    /* Footer note */
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 28px;
+      padding-bottom: 12px;
+    }
+  </style>
+</head>
+<body class="court-bg-pattern">
+
+  <!-- Floating shuttlecock -->
+  <div class="shuttlecock">🏸</div>
+
+  <!-- GPS Loading -->
+  <div id="gps-loading">
+    <div class="gps-spinner"></div>
+    <div>
+      <div style="font-family:var(--font-heading);font-size:22px;letter-spacing:2px;color:var(--black);">VERIFYING LOCATION</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Please allow location access...</div>
+    </div>
+  </div>
+
+  <!-- GPS Blocked -->
+  <div id="gps-blocked">
+    <div class="blocked-icon">📍</div>
+    <div class="blocked-title">ACCESS DENIED</div>
+    <p style="font-size:13px;color:var(--text-muted);max-width:260px;line-height:1.7;">
+      You must be inside Disha Hall to book a court. Please scan the QR code when you arrive.
+    </p>
+    <div class="blocked-messages">
+      <div class="blocked-msg">You are not within range of the academy (150m)</div>
+      <div class="blocked-msg">يجب أن تكون داخل الأكاديمية لحجز ملعب</div>
+      <div class="blocked-msg">您必须在学院内才能预订球场</div>
+      <div class="blocked-msg">Anda harus berada di dalam akademi untuk memesan</div>
+      <div class="blocked-msg">अकादमी के अंदर होना आवश्यक है</div>
+      <div class="blocked-msg">Anda mesti berada di dalam akademi untuk menempah</div>
+    </div>
+    <button class="btn btn-outline mt-4" style="width:auto;padding:10px 28px;" onclick="retryGPS()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- Main Content (shown after GPS ok) -->
+  <div id="main-content" class="index-wrapper">
+
+    <!-- Logo -->
+    <div class="logo-area" data-aos="fade-down" data-aos-duration="600">
+      <div class="logo-main">DISHA <span>HALL</span></div>
+      <div class="logo-tagline">Badminton Academy · Nasr City, Cairo</div>
+      <div class="logo-divider"></div>
+    </div>
+
+    <!-- GPS verified -->
+    <div data-aos="fade-up" data-aos-delay="100" data-aos-duration="500">
+      <div class="gps-bar">
+        <div class="gps-dot"></div>
+        <div class="gps-text">GPS Verified — You are inside Disha Hall ✓</div>
+      </div>
+    </div>
+
+    <!-- Language header -->
+    <div class="section-head" data-aos="fade-up" data-aos-delay="150">
+      <h2>SELECT LANGUAGE</h2>
+      <p>Choose your preferred language to continue</p>
+    </div>
+
+    <!-- Language Cards -->
+    <div class="lang-grid">
+
+      <a href="signup.html" class="lang-card" onclick="setLang('en')"
+         data-aos="fade-up" data-aos-delay="200" data-aos-duration="400">
+        <img src="imgs/flags/UK.webp" alt="English" class="flag-img" />
+        <div class="country-name">English</div>
+        <div class="lang-native">English</div>
+      </a>
+
+      <a href="signup.html" class="lang-card" onclick="setLang('ar')"
+         data-aos="fade-up" data-aos-delay="250" data-aos-duration="400">
+        <img src="imgs/flags/egypt.svg" alt="Arabic" class="flag-img" />
+        <div class="country-name">مصر</div>
+        <div class="lang-native">العربية</div>
+      </a>
+
+      <a href="signup.html" class="lang-card" onclick="setLang('zh')"
+         data-aos="fade-up" data-aos-delay="300" data-aos-duration="400">
+        <img src="imgs/flags/china.webp" alt="Chinese" class="flag-img" />
+        <div class="country-name">中国</div>
+        <div class="lang-native">中文</div>
+      </a>
+
+      <a href="signup.html" class="lang-card" onclick="setLang('ms')"
+         data-aos="fade-up" data-aos-delay="350" data-aos-duration="400">
+        <img src="imgs/flags/malaysia.png" alt="Malay" class="flag-img" />
+        <div class="country-name">Malaysia</div>
+        <div class="lang-native">Bahasa Melayu</div>
+      </a>
+
+      <a href="signup.html" class="lang-card" onclick="setLang('hi')"
+         data-aos="fade-up" data-aos-delay="400" data-aos-duration="400">
+        <img src="imgs/flags/india.jpg" alt="Hindi" class="flag-img" />
+        <div class="country-name">भारत</div>
+        <div class="lang-native">हिन्दी</div>
+      </a>
+
+      <a href="signup.html" class="lang-card" onclick="setLang('id')"
+         data-aos="fade-up" data-aos-delay="450" data-aos-duration="400">
+        <img src="imgs/flags/Indonesia.svg" alt="Indonesian" class="flag-img" />
+        <div class="country-name">Indonesia</div>
+        <div class="lang-native">Bahasa Indonesia</div>
+      </a>
+
+    </div>
+
+    <!-- Academy info strip -->
+    <div class="info-strip" data-aos="fade-up" data-aos-delay="500" data-aos-duration="500">
+      <div class="info-strip-item">
+        <div class="info-strip-val">6</div>
+        <div class="info-strip-lbl">Courts</div>
+      </div>
+      <div class="info-strip-div"></div>
+      <div class="info-strip-item">
+        <div class="info-strip-val">200</div>
+        <div class="info-strip-lbl">EGP / hr</div>
+      </div>
+      <div class="info-strip-div"></div>
+      <div class="info-strip-item">
+        <div class="info-strip-val">9AM</div>
+        <div class="info-strip-lbl">Opens</div>
+      </div>
+      <div class="info-strip-div"></div>
+      <div class="info-strip-item">
+        <div class="info-strip-val">11PM</div>
+        <div class="info-strip-lbl">Closes</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-note" data-aos="fade-up" data-aos-delay="550">
+      Disha Hall · Nasr City, Cairo, Egypt<br>
+      Powered by GPS-verified booking
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="js/data.js" type="module"></script>
+
+  <script>
+    // ── AOS Init ──────────────────────────────────────────
+    AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+    // ── Academy GPS Coordinates ───────────────────────────
+    const ACADEMY_LAT = 30.0658149;
+    const ACADEMY_LNG = 31.3640282;
+    const RADIUS_M    = 50000;
+
+    // ── Haversine Distance (meters) ───────────────────────
+    function getDistanceMeters(lat1, lng1, lat2, lng2) {
+      const R  = 6371000;
+      const dL = (lat2 - lat1) * Math.PI / 180;
+      const dG = (lng2 - lng1) * Math.PI / 180;
+      const a  = Math.sin(dL/2) * Math.sin(dL/2) +
+                 Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+                 Math.sin(dG/2) * Math.sin(dG/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // ── Show / hide screens ───────────────────────────────
+    function showLoading()  {
+      document.getElementById('gps-loading').style.display = 'flex';
+      document.getElementById('gps-blocked').classList.remove('show');
+      document.getElementById('main-content').classList.remove('show');
+    }
+
+    function showBlocked() {
+      document.getElementById('gps-loading').style.display = 'none';
+      document.getElementById('gps-blocked').classList.add('show');
+      document.getElementById('main-content').classList.remove('show');
+    }
+
+    function showMain() {
+      document.getElementById('gps-loading').style.display = 'none';
+      document.getElementById('gps-blocked').classList.remove('show');
+      document.getElementById('main-content').classList.add('show');
+      AOS.refresh();
+    }
+
+    // ── GPS Check ─────────────────────────────────────────
+    function checkGPS() {
+      showLoading();
+      if (!navigator.geolocation) { showBlocked(); return; }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const dist = getDistanceMeters(
+            pos.coords.latitude, pos.coords.longitude,
+            ACADEMY_LAT, ACADEMY_LNG
+          );
+          // ── DEV MODE: comment out the if/else and just call showMain() for testing
+          if (dist <= RADIUS_M) {
+            showMain();
+          } else {
+            showBlocked();
+          }
+        },
+        () => showBlocked(),
+        { timeout: 10000, maximumAge: 30000, enableHighAccuracy: true }
+      );
+    }
+
+    function retryGPS() { checkGPS(); }
+
+    // ── Save selected language ────────────────────────────
+    function setLang(code) {
+      localStorage.setItem('dh_lang', code);
+    }
+
+    // ── Auto-check if already logged in ──────────────────
+    // (redirect to home if Firebase Auth session exists)
+
+    // ── Run on load ───────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', checkGPS);
+  </script>
+</body>
+</html>

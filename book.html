@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disha Hall — Book a Court</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body { background: var(--bg); min-height: 100vh; }
+
+    .book-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 100px;
+    }
+
+    /* ── Screen header ── */
+    .screen-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border-bottom: 1.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .screen-header-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--black);
+    }
+    .header-price-tag {
+      margin-left: auto;
+      background: var(--orange-light);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--orange);
+    }
+
+    .page-content { padding: 20px; }
+
+    /* ── Section label ── */
+    .step-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--black);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-num.done { background: var(--orange); }
+    .step-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── Courts Grid ── */
+    .courts-outer {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      margin-bottom: 20px;
+    }
+
+    .courts-legend {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* 2-column grid for 6 courts */
+    .courts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* ── Court SVG wrapper ── */
+    .court-item {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid var(--border);
+      transition: all 0.22s ease;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .court-item.available:hover {
+      border-color: var(--orange);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.2);
+    }
+
+    .court-item.selected {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.2);
+    }
+
+    .court-item.taken {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(0.6);
+    }
+    .court-item.taken:hover { transform: none; box-shadow: none; }
+
+    /* Court label bar below SVG */
+    .court-label-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      border-top: 1.5px solid var(--border);
+      background: var(--bg-card);
+    }
+    .court-num-label {
+      font-family: var(--font-heading);
+      font-size: 15px;
+      letter-spacing: 1px;
+      color: var(--black);
+    }
+    .court-status-label {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+    }
+    .court-item.available .court-status-label,
+    .court-item.selected  .court-status-label {
+      background: rgba(255,107,53,0.1);
+      color: var(--orange);
+    }
+    .court-item.taken .court-status-label {
+      background: rgba(0,0,0,0.06);
+      color: var(--text-muted);
+    }
+    .court-item.selected .court-label-bar {
+      background: var(--orange);
+    }
+    .court-item.selected .court-num-label   { color: #fff; }
+    .court-item.selected .court-status-label {
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+    }
+
+    /* ── Date selector ── */
+    .date-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .date-scroll::-webkit-scrollbar { display: none; }
+
+    .date-chip {
+      flex-shrink: 0;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      min-width: 58px;
+    }
+    .date-chip:hover { border-color: var(--orange); }
+    .date-chip.selected {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+    .date-chip-day {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .date-chip-num {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: var(--black);
+      line-height: 1.1;
+    }
+    .date-chip.selected .date-chip-day { color: rgba(255,255,255,0.7); }
+    .date-chip.selected .date-chip-num { color: #fff; }
+
+    /* ── Time selector ── */
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+    .time-btn {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 4px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-body);
+    }
+    .time-btn:hover   { border-color: var(--orange); color: var(--orange); }
+    .time-btn.selected { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .time-btn.unavail  { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Hours ── */
+    .hours-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .hour-pill {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-body);
+    }
+    .hour-pill:hover   { border-color: var(--orange); color: var(--orange); }
+    .hour-pill.selected { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+    /* ── Summary card ── */
+    .summary-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      font-size: 13px;
+    }
+    .s-label { color: var(--text-muted); font-weight: 600; }
+    .s-value { font-weight: 700; color: var(--text-primary); }
+    .summary-div { border: none; border-top: 1px solid var(--border-soft); margin: 10px 0; }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .t-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .t-value {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: var(--orange);
+      letter-spacing: 1px;
+    }
+
+    /* ── Disclaimer ── */
+    .disclaimer {
+      background: var(--orange-light);
+      border: 1px solid rgba(255,107,53,0.2);
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+      font-size: 12px;
+      color: var(--orange);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    /* ── Validation msg ── */
+    .validation-msg {
+      display: none;
+      background: rgba(229,57,53,0.08);
+      border: 1px solid rgba(229,57,53,0.2);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--danger);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .validation-msg.show { display: block; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display: flex;
+      background: var(--bg-card);
+      border-top: 1.5px solid var(--border);
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .bnav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 8px 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .bnav-icon  { font-size: 20px; margin-bottom: 3px; }
+    .bnav-label { font-size: 10px; font-weight: 700; color: var(--text-muted); }
+    .bnav-item.active .bnav-label { color: var(--orange); }
+    .bnav-item:hover  .bnav-label { color: var(--orange); }
+
+    /* section spacing */
+    .form-section { margin-bottom: 24px; }
+  </style>
+</head>
+<body class="court-bg-pattern">
+
+<div class="book-wrapper">
+
+  <!-- Header -->
+  <div class="screen-header">
+    <a href="home.html" class="btn-back">&#8592;</a>
+    <div class="screen-header-title">BOOK A COURT</div>
+    <div class="header-price-tag">200 EGP / hr</div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- ── STEP 1: Select Court ─────────────────────────── -->
+    <div class="form-section" data-aos="fade-up" data-aos-duration="450">
+      <div class="step-label">
+        <div class="step-num" id="step1-num">1</div>
+        <div class="step-title">Select a Court</div>
+      </div>
+
+      <div class="courts-outer">
+        <div class="courts-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--orange);"></div>Available
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#ccc;"></div>Taken
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--black);"></div>Selected
+          </div>
+        </div>
+
+        <div class="courts-grid" id="courts-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: Select Date ──────────────────────────── -->
+    <div class="form-section" data-aos="fade-up" data-aos-delay="80" data-aos-duration="450">
+      <div class="step-label">
+        <div class="step-num" id="step2-num">2</div>
+        <div class="step-title">Select Date</div>
+      </div>
+      <div class="date-scroll" id="date-scroll">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Select Time ──────────────────────────── -->
+    <div class="form-section" data-aos="fade-up" data-aos-delay="140" data-aos-duration="450">
+      <div class="step-label">
+        <div class="step-num" id="step3-num">3</div>
+        <div class="step-title">Select Start Time</div>
+      </div>
+      <div class="time-grid" id="time-grid">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- ── STEP 4: Select Hours ─────────────────────────── -->
+    <div class="form-section" data-aos="fade-up" data-aos-delay="200" data-aos-duration="450">
+      <div class="step-label">
+        <div class="step-num" id="step4-num">4</div>
+        <div class="step-title">Number of Hours</div>
+      </div>
+      <div class="hours-row">
+        <div class="hour-pill" onclick="selectHours(this, 1)">1 hr</div>
+        <div class="hour-pill selected" onclick="selectHours(this, 2)">2 hrs</div>
+        <div class="hour-pill" onclick="selectHours(this, 3)">3 hrs</div>
+        <div class="hour-pill" onclick="selectHours(this, 4)">4 hrs</div>
+      </div>
+    </div>
+
+    <!-- ── Booking Summary ──────────────────────────────── -->
+    <div data-aos="fade-up" data-aos-delay="240" data-aos-duration="450">
+      <div class="step-label">
+        <div class="step-num">5</div>
+        <div class="step-title">Booking Summary</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-row">
+          <span class="s-label">Court</span>
+          <span class="s-value" id="sum-court">— Select a court</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">Date</span>
+          <span class="s-value" id="sum-date">— Select a date</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">Start Time</span>
+          <span class="s-value" id="sum-start">— Select a time</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">End Time</span>
+          <span class="s-value" id="sum-end">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="s-label">Duration</span>
+          <span class="s-value" id="sum-hours">2 hours</span>
+        </div>
+        <hr class="summary-div">
+        <div class="total-row">
+          <span class="t-label">Total (Cash at desk)</span>
+          <span class="t-value" id="sum-total">400 EGP</span>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        Payment is collected in cash at the reception when you arrive. Please be on time for your booking.
+      </div>
+
+      <div class="validation-msg" id="val-msg">
+        Please select a court, date and time before continuing.
+      </div>
+
+      <a href="rules.html" class="btn btn-primary" id="btn-continue" onclick="return saveDraft()">
+        Review Rules &amp; Confirm →
+      </a>
+    </div>
+
+  </div><!-- /page-content -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="home.html"       class="bnav-item"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></a>
+    <a href="book.html"       class="bnav-item active"><div class="bnav-icon">🏸</div><div class="bnav-label" style="color:var(--orange);">Book</div></a>
+    <a href="mybookings.html" class="bnav-item"><div class="bnav-icon">📋</div><div class="bnav-label">My Bookings</div></a>
+  </nav>
+
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_AUTH_DOMAIN",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+// ── Booking state ─────────────────────────────────────────
+let selectedCourt = null;
+let selectedDate  = null;
+let selectedTime  = null;
+let selectedHours = 2;
+let takenCourts   = new Set();
+
+// ── Time slots 9AM – 9PM (last slot = 9PM, ends 10/11PM) ─
+const TIME_SLOTS = [
+  '9:00 AM','10:00 AM','11:00 AM','12:00 PM',
+  '1:00 PM','2:00 PM','3:00 PM','4:00 PM',
+  '5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM'
+];
+
+// ── Build SVG badminton court ─────────────────────────────
+function buildCourtSVG(courtNum, status) {
+  // Colors based on status
+  const isSelected  = status === 'selected';
+  const isTaken     = status === 'taken';
+
+  const floorColor  = isTaken ? '#E8E8E8' : '#FFF8F5';
+  const lineColor   = isTaken ? '#BBBBBB' : (isSelected ? '#FF6B35' : '#FF6B35');
+  const lineOpacity = isTaken ? '0.4'     : (isSelected ? '1'       : '0.7');
+  const netColor    = isTaken ? '#AAA'    : '#1A1A1A';
+
+  return `
+  <svg viewBox="0 0 160 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+
+    <!-- Floor -->
+    <rect x="0" y="0" width="160" height="110" fill="${floorColor}"/>
+
+    <!-- Outer boundary -->
+    <rect x="8" y="6" width="144" height="98"
+          fill="none" stroke="${lineColor}" stroke-width="1.8" opacity="${lineOpacity}"/>
+
+    <!-- Singles sidelines (inner vertical lines) -->
+    <line x1="22" y1="6"  x2="22" y2="104"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
+    <line x1="138" y1="6" x2="138" y2="104"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
+
+    <!-- Net (center horizontal) -->
+    <line x1="8" y1="55" x2="152" y2="55"
+          stroke="${netColor}" stroke-width="2.5" opacity="${isTaken ? '0.3' : '0.85'}"/>
+
+    <!-- Net posts -->
+    <circle cx="22"  cy="55" r="2.5" fill="${netColor}" opacity="${isTaken ? '0.3' : '0.85'}"/>
+    <circle cx="138" cy="55" r="2.5" fill="${netColor}" opacity="${isTaken ? '0.3' : '0.85'}"/>
+
+    <!-- Short service lines -->
+    <line x1="8"   y1="34" x2="152" y2="34"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
+    <line x1="8"   y1="76" x2="152" y2="76"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
+
+    <!-- Long service lines (doubles) -->
+    <line x1="8"   y1="16" x2="152" y2="16"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}" stroke-dasharray="3,2"/>
+    <line x1="8"   y1="94" x2="152" y2="94"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}" stroke-dasharray="3,2"/>
+
+    <!-- Center service line (top half) -->
+    <line x1="80" y1="6"  x2="80" y2="55"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
+    <!-- Center service line (bottom half) -->
+    <line x1="80" y1="55" x2="80" y2="104"
+          stroke="${lineColor}" stroke-width="1" opacity="${lineOpacity}"/>
+
+    <!-- Court number watermark -->
+    <text x="80" y="50"
+          text-anchor="middle" dominant-baseline="middle"
+          font-family="'Bebas Neue', sans-serif"
+          font-size="28"
+          fill="${lineColor}"
+          opacity="${isTaken ? '0.15' : (isSelected ? '0.18' : '0.12')}">
+      ${courtNum}
+    </text>
+    <text x="80" y="64"
+          text-anchor="middle" dominant-baseline="middle"
+          font-family="'Bebas Neue', sans-serif"
+          font-size="7"
+          fill="${lineColor}"
+          opacity="${isTaken ? '0.2' : '0.3'}"
+          letter-spacing="2">
+      COURT
+    </text>
+
+    ${isTaken ? `
+    <!-- Taken X overlay -->
+    <line x1="30" y1="20" x2="130" y2="90"
+          stroke="#E53935" stroke-width="1.5" opacity="0.25"/>
+    <line x1="130" y1="20" x2="30" y2="90"
+          stroke="#E53935" stroke-width="1.5" opacity="0.25"/>
+    ` : ''}
+  </svg>`;
+}
+
+// ── Render all 6 courts ───────────────────────────────────
+function renderCourts(takenSet) {
+  const grid = document.getElementById('courts-grid');
+  grid.innerHTML = '';
+
+  for (let i = 1; i <= 6; i++) {
+    const isTaken = takenSet.has(i);
+    const status  = isTaken ? 'taken' : 'available';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = `court-item ${status}`;
+    wrapper.id = `court-${i}`;
+    wrapper.dataset.court = i;
+
+    wrapper.innerHTML = `
+      ${buildCourtSVG(i, status)}
+      <div class="court-label-bar">
+        <div class="court-num-label">Court ${i}</div>
+        <div class="court-status-label">${isTaken ? 'Taken' : 'Available'}</div>
+      </div>`;
+
+    if (!isTaken) {
+      wrapper.addEventListener('click', () => selectCourt(i));
+    }
+
+    grid.appendChild(wrapper);
+  }
+}
+
+// ── Select court ──────────────────────────────────────────
+function selectCourt(num) {
+  selectedCourt = num;
+
+  document.querySelectorAll('.court-item').forEach(el => {
+    if (el.dataset.court == num) {
+      el.className = 'court-item selected';
+      el.querySelector('svg').innerHTML = buildCourtSVG(num, 'selected').match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1];
+      el.querySelector('.court-status-label').textContent = 'Selected ✓';
+    } else if (!takenCourts.has(Number(el.dataset.court))) {
+      el.className = 'court-item available';
+      const n = Number(el.dataset.court);
+      el.querySelector('svg').innerHTML = buildCourtSVG(n, 'available').match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1];
+      el.querySelector('.court-status-label').textContent = 'Available';
+    }
+  });
+
+  document.getElementById('step1-num').classList.add('done');
+  updateSummary();
+}
+
+// ── Build date chips (today + next 6 days) ────────────────
+function buildDateChips() {
+  const scroll = document.getElementById('date-scroll');
+  scroll.innerHTML = '';
+
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  for (let i = 0; i < 7; i++) {
+    const d   = new Date();
+    d.setDate(d.getDate() + i);
+
+    const chip = document.createElement('div');
+    chip.className = 'date-chip' + (i === 0 ? ' selected' : '');
+    chip.dataset.date = d.toISOString().split('T')[0];
+    chip.innerHTML = `
+      <div class="date-chip-day">${i === 0 ? 'Today' : days[d.getDay()]}</div>
+      <div class="date-chip-num">${d.getDate()}</div>
+      <div class="date-chip-day" style="font-size:9px;">${months[d.getMonth()]}</div>`;
+
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedDate = chip.dataset.date;
+      document.getElementById('step2-num').classList.add('done');
+      loadCourtAvailabilityForDate(selectedDate);
+      updateSummary();
+    });
+
+    scroll.appendChild(chip);
+  }
+
+  // Default to today
+  selectedDate = new Date().toISOString().split('T')[0];
+}
+
+// ── Build time slot grid ──────────────────────────────────
+function buildTimeSlots() {
+  const grid = document.getElementById('time-grid');
+  grid.innerHTML = '';
+
+  TIME_SLOTS.forEach(slot => {
+    const btn = document.createElement('div');
+    btn.className = 'time-btn';
+    btn.textContent = slot;
+    btn.dataset.time = slot;
+
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('unavail')) return;
+      document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedTime = slot;
+      document.getElementById('step3-num').classList.add('done');
+      updateSummary();
+    });
+
+    grid.appendChild(btn);
+  });
+}
+
+// ── Select hours ──────────────────────────────────────────
+function selectHours(el, hrs) {
+  document.querySelectorAll('.hour-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedHours = hrs;
+  document.getElementById('step4-num').classList.add('done');
+  updateSummary();
+}
+
+// ── Update summary card ───────────────────────────────────
+function updateSummary() {
+  document.getElementById('sum-court').textContent =
+    selectedCourt ? `Court ${selectedCourt}` : '— Select a court';
+
+  document.getElementById('sum-date').textContent =
+    selectedDate ? formatDate(selectedDate) : '— Select a date';
+
+  document.getElementById('sum-start').textContent =
+    selectedTime || '— Select a time';
+
+  if (selectedTime) {
+    document.getElementById('sum-end').textContent = calcEndTime(selectedTime, selectedHours);
+  } else {
+    document.getElementById('sum-end').textContent = '—';
+  }
+
+  document.getElementById('sum-hours').textContent =
+    selectedHours + (selectedHours === 1 ? ' hour' : ' hours');
+
+  document.getElementById('sum-total').textContent =
+    (selectedHours * 200) + ' EGP';
+}
+
+// ── Calc end time ─────────────────────────────────────────
+function calcEndTime(start, hrs) {
+  const isPM  = start.includes('PM');
+  const isAM  = start.includes('AM');
+  let   [h,m] = start.replace(' AM','').replace(' PM','').split(':').map(Number);
+  if (isPM && h !== 12) h += 12;
+  if (isAM && h === 12) h = 0;
+  h += hrs;
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const disp   = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+  return `${disp}:00 ${suffix}`;
+}
+
+// ── Format date ───────────────────────────────────────────
+function formatDate(dateStr) {
+  const d     = new Date(dateStr + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff  = Math.round((d - today) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+}
+
+// ── Load court availability for selected date ─────────────
+function loadCourtAvailabilityForDate(date) {
+  db.collection('bookings')
+    .where('date', '==', date)
+    .where('status', '==', 'confirmed')
+    .onSnapshot(snap => {
+      takenCourts = new Set(snap.docs.map(d => d.data().courtNumber));
+      renderCourts(takenCourts);
+      // Re-select if previously selected and still available
+      if (selectedCourt && !takenCourts.has(selectedCourt)) {
+        selectCourt(selectedCourt);
+      } else if (selectedCourt && takenCourts.has(selectedCourt)) {
+        selectedCourt = null;
+        updateSummary();
+      }
+    });
+}
+
+// ── Validate and save draft to localStorage ───────────────
+function saveDraft() {
+  const msg = document.getElementById('val-msg');
+  if (!selectedCourt || !selectedDate || !selectedTime) {
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 3000);
+    return false;
+  }
+  msg.classList.remove('show');
+
+  // Save booking draft for rules.html → confirm.html to use
+  localStorage.setItem('dh_draft', JSON.stringify({
+    courtNumber: selectedCourt,
+    date:        selectedDate,
+    startTime:   selectedTime,
+    endTime:     calcEndTime(selectedTime, selectedHours),
+    hours:       selectedHours,
+    totalPrice:  selectedHours * 200,
+  }));
+  return true;
+}
+
+// ── Auth gate ─────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+  if (!user) { window.location.href = 'signup.html'; return; }
+
+  // Init UI
+  buildDateChips();
+  buildTimeSlots();
+  updateSummary();
+  loadCourtAvailabilityForDate(selectedDate);
+
+  // Default hours
+  document.getElementById('step4-num').classList.add('done');
+});
+</script>
+</body>
+</html>

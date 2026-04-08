@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disha Hall — Admin Dashboard</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body { background: #0D0D0D; min-height: 100vh; color: #fff; font-family: var(--font-body); }
+
+    .admin-wrapper { max-width: 960px; margin: 0 auto; padding-bottom: 60px; }
+
+    /* ── Admin Navbar ── */
+    .admin-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: #111;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .admin-logo {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: #fff;
+    }
+    .admin-logo span { color: var(--orange); }
+    .admin-badge {
+      background: rgba(255,107,53,0.15);
+      border: 1px solid rgba(255,107,53,0.3);
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 1px;
+    }
+    .admin-nav-right { display: flex; align-items: center; gap: 10px; }
+    .admin-clock {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 2px;
+    }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      border-radius: var(--radius-sm);
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Page content ── */
+    .admin-content { padding: 24px; }
+
+    /* ── Stats bar ── */
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media(min-width:600px) {
+      .admin-stats { grid-template-columns: repeat(4, 1fr); }
+    }
+    .admin-stat-card {
+      background: #1A1A1A;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      transition: all var(--transition);
+    }
+    .admin-stat-card:hover { border-color: rgba(255,107,53,0.3); }
+    .admin-stat-icon { font-size: 20px; margin-bottom: 8px; }
+    .admin-stat-val {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      color: #fff;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .admin-stat-val.orange { color: var(--orange); }
+    .admin-stat-val.green  { color: #22C55E; }
+    .admin-stat-val.red    { color: #E53935; }
+    .admin-stat-lbl {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+    }
+
+    /* ── Section title ── */
+    .admin-section-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-section-title .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22C55E;
+      animation: gps-pulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Filters bar ── */
+    .filters-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+    .filter-select {
+      background: #1A1A1A;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      transition: border-color var(--transition);
+    }
+    .filter-select:focus { border-color: var(--orange); }
+    .filter-select option { background: #1A1A1A; }
+
+    .filter-search {
+      flex: 1;
+      min-width: 160px;
+      background: #1A1A1A;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .filter-search::placeholder { color: rgba(255,255,255,0.25); }
+    .filter-search:focus { border-color: var(--orange); }
+
+    .filter-btn-reset {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.4);
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+    .filter-btn-reset:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* ── Tabs ── */
+    .admin-tabs {
+      display: flex;
+      gap: 4px;
+      background: #1A1A1A;
+      border-radius: var(--radius-lg);
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .admin-tab {
+      flex: 1;
+      text-align: center;
+      padding: 9px 8px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: rgba(255,255,255,0.35);
+      transition: all var(--transition);
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      letter-spacing: 0.3px;
+    }
+    .admin-tab.active {
+      background: var(--orange);
+      color: #fff;
+    }
+    .admin-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+    /* ── Booking rows ── */
+    .bookings-table {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .admin-booking-row {
+      background: #1A1A1A;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 56px 1fr 1fr auto;
+      gap: 12px;
+      align-items: center;
+      transition: all var(--transition);
+    }
+    .admin-booking-row:hover { border-color: rgba(255,107,53,0.25); }
+
+    @media(max-width:600px) {
+      .admin-booking-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+
+    /* Court mini badge */
+    .court-badge {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-md);
+      background: rgba(255,107,53,0.1);
+      border: 1px solid rgba(255,107,53,0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .court-badge-num {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .court-badge-lbl {
+      font-size: 8px;
+      color: rgba(255,107,53,0.6);
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .court-badge.cancelled-badge {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.08);
+    }
+    .court-badge.cancelled-badge .court-badge-num { color: rgba(255,255,255,0.25); }
+    .court-badge.cancelled-badge .court-badge-lbl { color: rgba(255,255,255,0.15); }
+
+    /* Player info */
+    .row-player-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .row-player-detail {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.5;
+    }
+    .row-player-lang {
+      display: inline-block;
+      background: rgba(255,255,255,0.06);
+      border-radius: var(--radius-pill);
+      padding: 1px 7px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    /* Time info */
+    .row-time-date {
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 2px;
+    }
+    .row-time-slot {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 3px;
+    }
+    .row-price {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      color: var(--orange);
+      letter-spacing: 0.5px;
+    }
+    .row-ref {
+      font-size: 10px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.5px;
+    }
+
+    /* Actions */
+    .row-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+    .admin-cancel-btn {
+      background: transparent;
+      border: 1px solid rgba(229,57,53,0.3);
+      color: rgba(229,57,53,0.7);
+      border-radius: var(--radius-sm);
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+    .admin-cancel-btn:hover { background: rgba(229,57,53,0.1); border-color: var(--danger); color: var(--danger); }
+
+    /* Status badges */
+    .status-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .status-pill.upcoming   { background: rgba(255,107,53,0.15); color: var(--orange); }
+    .status-pill.completed  { background: rgba(34,197,94,0.1);   color: #22C55E; }
+    .status-pill.cancelled  { background: rgba(229,57,53,0.1);   color: #E53935; }
+    .status-pill.inprogress { background: rgba(245,166,35,0.15); color: var(--warning); }
+
+    /* ── Today's timeline ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 24px;
+    }
+    .timeline-hour {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 6px 0;
+      border-left: 2px solid rgba(255,255,255,0.06);
+      padding-left: 14px;
+      position: relative;
+    }
+    .timeline-hour::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 12px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+    }
+    .timeline-hour.has-booking::before { background: var(--orange); }
+    .timeline-hour.current::before { background: #22C55E; animation: gps-pulse 2s infinite; }
+    .timeline-time {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 1px;
+      width: 56px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .timeline-hour.has-booking .timeline-time { color: var(--orange); }
+    .timeline-hour.current .timeline-time     { color: #22C55E; }
+    .timeline-slot {
+      flex: 1;
+      min-height: 24px;
+    }
+    .timeline-booking {
+      background: rgba(255,107,53,0.12);
+      border: 1px solid rgba(255,107,53,0.25);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .timeline-booking-info { font-size: 12px; color: rgba(255,255,255,0.7); }
+    .timeline-booking-court { font-family: var(--font-heading); font-size: 14px; color: var(--orange); }
+
+    /* ── Empty state ── */
+    .admin-empty {
+      text-align: center;
+      padding: 48px 24px;
+      background: #1A1A1A;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+    }
+    .admin-empty-icon  { font-size: 40px; margin-bottom: 12px; }
+    .admin-empty-title { font-family: var(--font-heading); font-size: 18px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+
+    /* ── Courts status grid ── */
+    .courts-status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    @media(min-width:600px) { .courts-status-grid { grid-template-columns: repeat(6,1fr); } }
+    .court-status-card {
+      background: #1A1A1A;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+      text-align: center;
+      transition: all var(--transition);
+    }
+    .court-status-card.free   { border-color: rgba(34,197,94,0.3); }
+    .court-status-card.booked { border-color: rgba(255,107,53,0.3); }
+    .court-status-num {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .court-status-card.free   .court-status-num { color: #22C55E; }
+    .court-status-card.booked .court-status-num { color: var(--orange); }
+    .court-status-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .court-status-card.free   .court-status-lbl { color: rgba(34,197,94,0.5); }
+    .court-status-card.booked .court-status-lbl { color: rgba(255,107,53,0.5); }
+
+    /* ── Notification toast ── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: #1A1A1A;
+      border: 1px solid rgba(255,107,53,0.4);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #fff;
+      max-width: 280px;
+      animation: toast-in 0.3s ease;
+    }
+    @keyframes toast-in { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+    .toast.removing { animation: toast-out 0.3s ease forwards; }
+    @keyframes toast-out { to{transform:translateX(120%);opacity:0} }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #1A1A1A;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      animation: modal-pop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes modal-pop { from{transform:scale(0.85);opacity:0} to{transform:scale(1);opacity:1} }
+    .modal-title { font-family: var(--font-heading); font-size: 22px; letter-spacing: 2px; color: #fff; margin-bottom: 8px; }
+    .modal-desc  { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      border: none;
+      transition: all var(--transition);
+    }
+    .modal-btn-keep   { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); }
+    .modal-btn-cancel { background: #E53935; color: #fff; }
+    .modal-btn-cancel:hover { background: #c62828; }
+
+    /* skeleton */
+    .skeleton {
+      background: linear-gradient(90deg,#1A1A1A 25%,#2A2A2A 50%,#1A1A1A 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: var(--radius-lg);
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media(min-width:768px) { .two-col { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Cancel modal -->
+<div class="modal-overlay" id="cancel-modal">
+  <div class="modal-box">
+    <div style="font-size:40px;margin-bottom:14px;">⚠️</div>
+    <div class="modal-title">CANCEL BOOKING?</div>
+    <div class="modal-desc" id="modal-desc">Cancel this booking? The court will be released immediately.</div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-keep" onclick="closeModal()">Keep It</button>
+      <button class="modal-btn modal-btn-cancel" id="modal-confirm-btn" onclick="executeAdminCancel()">Cancel It</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-wrapper">
+
+  <!-- Admin Navbar -->
+  <nav class="admin-nav">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="admin-logo">DISHA <span>HALL</span></div>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="admin-nav-right">
+      <div class="admin-clock" id="admin-clock">--:--</div>
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="admin-content">
+
+    <!-- Stats bar -->
+    <div class="admin-stats" data-aos="fade-down" data-aos-duration="500">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📅</div>
+        <div class="admin-stat-val orange" id="stat-today">—</div>
+        <div class="admin-stat-lbl">Bookings Today</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">🏸</div>
+        <div class="admin-stat-val green" id="stat-free">—</div>
+        <div class="admin-stat-lbl">Courts Free Now</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">💰</div>
+        <div class="admin-stat-val orange" id="stat-revenue">—</div>
+        <div class="admin-stat-lbl">Today's Revenue (EGP)</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">👥</div>
+        <div class="admin-stat-val" id="stat-total">—</div>
+        <div class="admin-stat-lbl">Total Bookings (All)</div>
+      </div>
+    </div>
+
+    <!-- Courts live status -->
+    <div data-aos="fade-up" data-aos-delay="80" data-aos-duration="400">
+      <div class="admin-section-title">
+        <div class="live-dot"></div>
+        COURTS LIVE STATUS
+      </div>
+      <div class="courts-status-grid" id="courts-status-grid">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- Main tabs -->
+    <div data-aos="fade-up" data-aos-delay="120" data-aos-duration="400">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('all')">All Bookings</button>
+        <button class="admin-tab"        onclick="switchAdminTab('today')">Today</button>
+        <button class="admin-tab"        onclick="switchAdminTab('upcoming')">Upcoming</button>
+        <button class="admin-tab"        onclick="switchAdminTab('cancelled')">Cancelled</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar" data-aos="fade-up" data-aos-delay="160" data-aos-duration="400">
+      <input class="filter-search" type="text" id="search-input"
+             placeholder="Search player name, email or ref..." oninput="applyFilters()" />
+      <select class="filter-select" id="filter-court" onchange="applyFilters()">
+        <option value="">All Courts</option>
+        <option value="1">Court 1</option>
+        <option value="2">Court 2</option>
+        <option value="3">Court 3</option>
+        <option value="4">Court 4</option>
+        <option value="5">Court 5</option>
+        <option value="6">Court 6</option>
+      </select>
+      <select class="filter-select" id="filter-date" onchange="applyFilters()">
+        <option value="">All Dates</option>
+      </select>
+      <button class="filter-btn-reset" onclick="resetFilters()">Reset</button>
+    </div>
+
+    <!-- Bookings list -->
+    <div id="bookings-container" data-aos="fade-up" data-aos-delay="200" data-aos-duration="400">
+      <div class="skeleton" style="height:80px;margin-bottom:8px;"></div>
+      <div class="skeleton" style="height:80px;margin-bottom:8px;"></div>
+      <div class="skeleton" style="height:80px;"></div>
+    </div>
+
+    <!-- Two-column: Timeline + Top players -->
+    <div class="two-col" style="margin-top:32px;" data-aos="fade-up" data-aos-delay="240">
+
+      <!-- Today's timeline -->
+      <div>
+        <div class="admin-section-title">TODAY'S TIMELINE</div>
+        <div class="timeline" id="today-timeline">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Top players -->
+      <div>
+        <div class="admin-section-title">TOP PLAYERS</div>
+        <div id="top-players-list" style="display:flex;flex-direction:column;gap:8px;">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Firebase ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_AUTH_DOMAIN",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Admin UID — replace with Mido's actual Firebase UID ───
+const ADMIN_UID = 'REPLACE_WITH_MIDO_FIREBASE_UID';
+
+AOS.init({ once: true, easing: 'ease-out-cubic' });
+
+// ── State ─────────────────────────────────────────────────
+let allBookings      = [];
+let filteredBookings = [];
+let activeTab        = 'all';
+let pendingCancelId  = null;
+let previousCount    = 0;
+
+// ── Live clock ────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('admin-clock').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+// ── Format date ───────────────────────────────────────────
+function formatDate(dateStr) {
+  const d     = new Date(dateStr + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff  = Math.round((d - today) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  if (diff === -1) return 'Yesterday';
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+}
+
+// ── Booking status ────────────────────────────────────────
+function getStatus(b) {
+  if (b.status === 'cancelled') return 'cancelled';
+  const today = new Date().toISOString().split('T')[0];
+  if (b.date < today) return 'completed';
+
+  // Check if currently in progress
+  const isPM  = b.startTime.includes('PM');
+  let [h]     = b.startTime.replace(' AM','').replace(' PM','').split(':').map(Number);
+  if (isPM && h !== 12) h += 12;
+  const start = new Date(b.date + 'T' + String(h).padStart(2,'0') + ':00:00');
+  const end   = new Date(start.getTime() + b.hours * 3600000);
+  const now   = new Date();
+  if (now >= start && now <= end) return 'inprogress';
+  return 'upcoming';
+}
+
+function getStatusLabel(status) {
+  return { upcoming:'Upcoming', completed:'Completed', cancelled:'Cancelled', inprogress:'In Progress' }[status] || status;
+}
+
+// ── Build booking row ─────────────────────────────────────
+function buildRow(id, b) {
+  const status   = getStatus(b);
+  const isCancelled = status === 'cancelled';
+
+  const row = document.createElement('div');
+  row.className = 'admin-booking-row';
+  row.setAttribute('data-aos','fade-up');
+
+  const langFlags = { en:'🇬🇧', ar:'🇪🇬', zh:'🇨🇳', ms:'🇲🇾', hi:'🇮🇳', id:'🇮🇩' };
+  const flag = langFlags[b.lang] || '🌍';
+
+  row.innerHTML = `
+    <div class="court-badge ${isCancelled ? 'cancelled-badge' : ''}">
+      <div class="court-badge-num">${b.courtNumber}</div>
+      <div class="court-badge-lbl">COURT</div>
+    </div>
+    <div>
+      <div class="row-player-name">${b.playerName || 'Unknown Player'}</div>
+      <div class="row-player-detail">
+        ${b.playerEmail || '—'}<br>
+        ${b.playerPhone || ''}
+      </div>
+      <span class="row-player-lang">${flag} ${(b.lang || 'en').toUpperCase()}</span>
+    </div>
+    <div>
+      <div class="row-time-date">${formatDate(b.date)}</div>
+      <div class="row-time-slot">${b.startTime} – ${b.endTime} · ${b.hours}hr${b.hours > 1 ? 's' : ''}</div>
+      <div class="row-price">${isCancelled ? '<span style="opacity:0.3;text-decoration:line-through;">' + b.totalPrice + ' EGP</span>' : b.totalPrice + ' EGP'}</div>
+      <div class="row-ref">Ref: ${b.reference || '—'}</div>
+    </div>
+    <div class="row-actions">
+      <span class="status-pill ${status}">${getStatusLabel(status)}</span>
+      ${!isCancelled && status !== 'completed'
+        ? `<button class="admin-cancel-btn" onclick="openModal('${id}', '${b.courtNumber}', '${b.playerName || 'player'}')">Cancel</button>`
+        : ''}
+    </div>`;
+  return row;
+}
+
+// ── Render bookings list ──────────────────────────────────
+function renderBookings(list) {
+  const container = document.getElementById('bookings-container');
+  container.innerHTML = '';
+
+  if (!list.length) {
+    container.innerHTML = `
+      <div class="admin-empty">
+        <div class="admin-empty-icon">📭</div>
+        <div class="admin-empty-title">NO BOOKINGS FOUND</div>
+      </div>`;
+    return;
+  }
+
+  list.forEach((item, i) => {
+    const row = buildRow(item.id, item.data);
+    row.setAttribute('data-aos-delay', String(i * 40));
+    container.appendChild(row);
+  });
+
+  AOS.refresh();
+}
+
+// ── Tab switch ────────────────────────────────────────────
+function switchAdminTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.admin-tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['all','today','upcoming','cancelled'][i] === tab);
+  });
+  applyFilters();
+}
+
+// ── Apply filters ─────────────────────────────────────────
+function applyFilters() {
+  const search    = document.getElementById('search-input').value.toLowerCase().trim();
+  const courtF    = document.getElementById('filter-court').value;
+  const dateF     = document.getElementById('filter-date').value;
+  const today     = new Date().toISOString().split('T')[0];
+
+  filteredBookings = allBookings.filter(item => {
+    const b      = item.data;
+    const status = getStatus(b);
+
+    // Tab filter
+    if (activeTab === 'today'     && b.date !== today)         return false;
+    if (activeTab === 'upcoming'  && (b.date < today || b.status === 'cancelled')) return false;
+    if (activeTab === 'cancelled' && b.status !== 'cancelled') return false;
+
+    // Court filter
+    if (courtF && String(b.courtNumber) !== courtF) return false;
+
+    // Date filter
+    if (dateF && b.date !== dateF) return false;
+
+    // Search filter
+    if (search) {
+      const haystack = [
+        b.playerName, b.playerEmail, b.reference, String(b.courtNumber)
+      ].join(' ').toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+
+    return true;
+  });
+
+  renderBookings(filteredBookings);
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value  = '';
+  document.getElementById('filter-court').value  = '';
+  document.getElementById('filter-date').value   = '';
+  applyFilters();
+}
+
+// ── Populate date filter dropdown ─────────────────────────
+function populateDateFilter(bookings) {
+  const dates = [...new Set(bookings.map(b => b.data.date))].sort().reverse();
+  const sel   = document.getElementById('filter-date');
+  sel.innerHTML = '<option value="">All Dates</option>';
+  dates.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = formatDate(d) + ' (' + d + ')';
+    sel.appendChild(opt);
+  });
+}
+
+// ── Update stats ──────────────────────────────────────────
+function updateStats(bookings) {
+  const today    = new Date().toISOString().split('T')[0];
+  const todayB   = bookings.filter(b => b.data.date === today && b.data.status === 'confirmed');
+  const takenNow = new Set(todayB.map(b => b.data.courtNumber));
+  const revenue  = todayB.reduce((s, b) => s + (b.data.totalPrice || 0), 0);
+
+  document.getElementById('stat-today').textContent   = todayB.length;
+  document.getElementById('stat-free').textContent    = 6 - takenNow.size;
+  document.getElementById('stat-revenue').textContent = revenue;
+  document.getElementById('stat-total').textContent   = bookings.filter(b => b.data.status !== 'cancelled').length;
+
+  // Courts status grid
+  const grid = document.getElementById('courts-status-grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const booked = takenNow.has(i);
+    const card   = document.createElement('div');
+    card.className = `court-status-card ${booked ? 'booked' : 'free'}`;
+    card.innerHTML = `
+      <div class="court-status-num">${i}</div>
+      <div class="court-status-lbl">${booked ? 'Booked' : 'Free'}</div>`;
+    grid.appendChild(card);
+  }
+
+  // New booking notification
+  if (previousCount > 0 && bookings.length > previousCount) {
+    showToast('🏸 New booking received!');
+  }
+  previousCount = bookings.length;
+}
+
+// ── Today's timeline ──────────────────────────────────────
+function buildTimeline(bookings) {
+  const today    = new Date().toISOString().split('T')[0];
+  const todayB   = bookings.filter(b => b.data.date === today && b.data.status === 'confirmed');
+  const nowHour  = new Date().getHours();
+  const timeline = document.getElementById('today-timeline');
+  timeline.innerHTML = '';
+
+  for (let h = 9; h <= 22; h++) {
+    const timeLabel = h <= 12 ? `${h}:00 AM` : `${h-12}:00 PM`;
+    const matching  = todayB.filter(b => {
+      const isPM = b.data.startTime.includes('PM');
+      let [bh]   = b.data.startTime.replace(' AM','').replace(' PM','').split(':').map(Number);
+      if (isPM && bh !== 12) bh += 12;
+      return bh === h;
+    });
+
+    const div = document.createElement('div');
+    div.className = `timeline-hour${matching.length ? ' has-booking' : ''}${h === nowHour ? ' current' : ''}`;
+    div.innerHTML = `
+      <div class="timeline-time">${h > 12 ? h-12 : h}${h >= 12 ? 'PM' : 'AM'}</div>
+      <div class="timeline-slot">
+        ${matching.map(b => `
+          <div class="timeline-booking">
+            <span class="timeline-booking-info">${b.data.playerName || 'Player'} · ${b.data.hours}hr</span>
+            <span class="timeline-booking-court">C${b.data.courtNumber}</span>
+          </div>`).join('')}
+      </div>`;
+    timeline.appendChild(div);
+  }
+}
+
+// ── Top players ───────────────────────────────────────────
+function buildTopPlayers(bookings) {
+  const confirmed = bookings.filter(b => b.data.status === 'confirmed');
+  const playerMap = {};
+
+  confirmed.forEach(b => {
+    const key  = b.data.playerEmail || b.data.playerName || 'unknown';
+    const name = b.data.playerName  || 'Unknown';
+    if (!playerMap[key]) playerMap[key] = { name, count: 0, spent: 0 };
+    playerMap[key].count++;
+    playerMap[key].spent += b.data.totalPrice || 0;
+  });
+
+  const sorted = Object.values(playerMap).sort((a,b) => b.count - a.count).slice(0,5);
+  const list   = document.getElementById('top-players-list');
+  list.innerHTML = '';
+
+  if (!sorted.length) {
+    list.innerHTML = `<div class="admin-empty" style="padding:24px;"><div class="admin-empty-title" style="font-size:14px;">No data yet</div></div>`;
+    return;
+  }
+
+  sorted.forEach((p, i) => {
+    const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+    const div    = document.createElement('div');
+    div.style.cssText = 'background:#1A1A1A;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">${medals[i]}</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#fff;">${p.name}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35);">${p.count} booking${p.count>1?'s':''}</div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-heading);font-size:16px;color:var(--orange);letter-spacing:1px;">${p.spent} EGP</div>`;
+    list.appendChild(div);
+  });
+}
+
+// ── Toast notification ────────────────────────────────────
+function showToast(msg) {
+  const container = document.getElementById('toast-container');
+  const toast     = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 350);
+  }, 4000);
+}
+
+// ── Cancel modal ──────────────────────────────────────────
+function openModal(bookingId, courtNum, playerName) {
+  pendingCancelId = bookingId;
+  document.getElementById('modal-desc').textContent =
+    `Cancel Court ${courtNum} for ${playerName}? The court will be released immediately.`;
+  document.getElementById('cancel-modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('cancel-modal').classList.remove('show');
+  pendingCancelId = null;
+}
+
+async function executeAdminCancel() {
+  if (!pendingCancelId) return;
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.disabled    = true;
+  btn.textContent = 'Cancelling...';
+  try {
+    await db.collection('bookings').doc(pendingCancelId).update({
+      status: 'cancelled',
+      cancelledBy: 'admin',
+      cancelledAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    closeModal();
+    showToast('✓ Booking cancelled successfully');
+  } catch (err) {
+    console.error(err);
+    btn.disabled    = false;
+    btn.textContent = 'Cancel It';
+  }
+}
+
+document.getElementById('cancel-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Load all bookings (real-time) ─────────────────────────
+function loadAllBookings() {
+  db.collection('bookings')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snap => {
+      allBookings = snap.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+      updateStats(allBookings);
+      buildTimeline(allBookings);
+      buildTopPlayers(allBookings);
+      populateDateFilter(allBookings);
+      applyFilters();
+    });
+}
+
+// ── Logout ────────────────────────────────────────────────
+async function handleLogout() {
+  await auth.signOut();
+  window.location.href = 'index.html';
+}
+
+// ── Auth gate (admin only) ────────────────────────────────
+auth.onAuthStateChanged(user => {
+  if (!user) { window.location.href = 'signup.html'; return; }
+  // Uncomment below to restrict to admin UID only:
+  // if (user.uid !== ADMIN_UID) { window.location.href = 'home.html'; return; }
+  loadAllBookings();
+});
+</script>
+</body>
+</html>
