@@ -213,24 +213,25 @@
     }
 
     .date-scroll {
-      display: flex;
-      gap: 8px;
-      overflow: hidden;
-      flex: 1;
-    }
+  display: flex;
+  gap: 6px;
+  overflow: visible;
+  flex: 1;
+  flex-wrap: nowrap;
+}
 
     .date-chip {
-      flex-shrink: 0;
-      background: var(--bg-card);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 10px 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all var(--transition);
-      min-width: 52px;
-      flex: 1;
-    }
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  min-width: 0;
+  flex: 1;
+}
     .date-chip:hover { border-color: var(--orange); }
     .date-chip.selected {
       background: var(--orange);
